@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>在线测评系统 | 管理员</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<link href="../../../static/modules/plugin/bootstrap/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+		<link href="../../../static/modules/plugin/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+		<!--<link href="../../../static/modules/plugin/animate/animate.css" rel="stylesheet">-->
+		<link href="../../../static/system/admin/css/style.css?v=4.1.0" rel="stylesheet">
+		<link href="../../../static/modules/plugin/treetable/jquery.treetable.theme.default.css" rel="stylesheet">
+    	<link href="../../../static/modules/plugin/treetable/jquery.treetable.css" rel="stylesheet">
+    	<!--<link href="../css/jquery.treetable.theme.default.css" rel="stylesheet">-->
+    	<!--<link href="../css/bootstrap.min.css?v=3.3.6" rel="stylesheet">-->
+    	<style>
+    		tr,td {
+    			height: 32px;
+    			line-height: 32px;
+    		}
+    		table {
+    			 border-collapse:collapse;
+    			 border: 2px solid rgb(205, 214, 213) !important;
+    		}
+    		tr {
+    			border: 1px dotted rgb(204, 204, 204) !important;
+    		}
+    		.table>thead>tr>th {
+			    padding: 8px;
+			    line-height: 2.5;
+			    vertical-align: top;
+			    border-top: 1px solid #ddd;
+			}
+			
+			input.changeNode,input.changeNode:focus,input.changeNode:active {
+				outline: none !important;
+				border-radius: 0;
+				-webkit-border-radius: 0;
+				-moz-border-radius: 0;
+				-webkit-appearance: none !important;
+			}
+			.form-group {
+				width: 90%;
+			}
+			.form-group,.inplabel  {
+				height: 37px;
+				line-height: 37px;
+				vertical-align: middle;
+			}
+			.inplabel {
+				text-align: right;
+				font-size: 15px;
+				letter-spacing: 2px;
+				padding-right: 0;
+			}
+			thead tr{
+				background: #3399CC;
+			}
+			.input {
+				width: 100%;
+			}
+    	</style>
+	</head>
+	<body class="gray-bg">
+		<div class="wrapper wrapper-content animated fadeInRight">
+			<div class="ibox float-e-margins">
+				<!-- Panel Other -->
+				<div class="ibox float-e-margins">
+					<div class="ibox-title">
+						<h5>章节管理—#(course.name)</h5>
+					</div>
+					<div class="ibox-content">
+						<div style="display: none;" class="alert alert-success alert-dismissable" id="success">
+							<button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> 删除成功
+						</div>
+						<div style="display: none;" class="alert alert-danger alert-dismissable" id="fail">
+							<button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> 删除失败！
+						</div>
+						<div class="row row-lg">
+							<div class="col-sm-12">
+								<!-- Example Events -->
+								<div class="example-wrap">
+									<table id="example-basic" class="table">  
+								        <thead>  
+								          <tr>  
+								            <th>章节名称</th>  
+								            <th>章节描述</th>  
+								            <th>章节操作</th>  
+								          </tr>  
+								        </thead> 
+								        <tbody>
+                                            <tr data-node-id="course#(course.id)" data-parent-id="0" data-node-sort="0" data-node-level="0" data-node-name="#(course.name)" data-node-nodeid="#(course.id)">  
+                                                <td><span class='folder'></span>#(course.name)</td>  
+                                                <td>#(course.name)</td>  
+                                                <td><a href="#" class="add">添加章目录</a></td>  
+                                            </tr>
+                                            #for(chapter : chapters)
+                                                <!-- 显示章的内容 -->
+                                                <tr data-node-id="chapter#(chapter.id)" data-parent-id="course#(course.id)" data-node-sort="#(chapter.sort)" data-node-level="1" data-node-name="#(chapter.name)" data-node-nodeid="#(chapter.id)">  
+                                                    <td><span class='folder'></span>#(chapter.name)</td>  
+                                                    <td>#(chapter.name)</td>  
+                                                    <td><a href="#" class="del">删除</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" class="add">添加节目录</a></td>  
+                                                </tr>
+                                                #for(section : chapter.sections)
+                                                    <!-- 显示节的内容 -->
+                                                    <tr data-node-id="section#(section.id)" data-parent-id="chapter#(chapter.id)" data-node-sort="#(section.sort)" data-node-level="2"  data-node-name="#(section.name)" data-node-nodeid="#(section.id)">  
+                                                        <td><span class='folder'></span>#(section.name)</td>  
+                                                        <td>#(section.name)</td>  
+                                                        <td><a href="#" class="del">删除</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" class="add">添加小节目录</a></td>  
+                                                    </tr>
+                                                    #for(part : section.parts)
+                                                        <!-- 显示小节内容 -->
+                                                        <tr data-node-id="part#(part.id)" data-parent-id="section#(section.id)" data-node-sort="#(part.sort)" data-node-level="3"  data-node-name="#(part.name)" data-node-nodeid="#(part.id)">  
+                                                            <td><span class='file'></span>#(part.name)</td>  
+                                                            <td>#(part.name)</td>  
+                                                            <td><a href="#" class="del">删除</a></td>  
+                                                        </tr>
+                                                    #end
+                                                #end
+                                            #end
+
+								        </tbody>  
+								        </table> 
+									
+										<!-- 修改节点模态框 -->
+										<!--<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+											<div class="modal-dialog">
+												<div class="modal-content">
+													<div class="modal-header">
+														<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+															&times;
+														</button>
+														<h4 class="modal-title" id="updatesort">
+															修改目录
+														</h4>
+													</div>
+													<div class="modal-body" style="width:600px;height:132px;">
+								                        <div class="form-group">
+								                            <label class="col-sm-2 control-label inplabel">名称:</label>
+								                            <div class="col-sm-10">
+								                                <input type="text" class="form-control changeNode input" id="updateNodename">
+								                            </div>
+								                        </div>
+								                        <div class="form-group">
+								                            <label class="col-sm-2 control-label inplabel">描述:</label>
+								                            <div class="col-sm-10">
+								                                <input type="text" class="form-control input changeNode" id="updateDiscribe">
+								                            </div>
+								                        </div>
+														
+													</div>
+													<div class="modal-footer">
+														<button type="button" id="right_btn" class="btn btn-primary">
+															提交修改
+														</button>
+														<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+														</button>
+													</div>
+												</div><!-- /.modal-content 
+											</div><!-- /.modal 
+										</div>-->
+										
+										<!-- 添加节点模态框 -->
+										<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+											<div class="modal-dialog">
+												<div class="modal-content">
+													<div class="modal-header">
+														<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+															&times;
+														</button>
+														<h4 class="modal-title" id="addsort">
+															添加目录
+														</h4>
+													</div>
+													<div class="modal-body" style="width:600px;height:132px;">
+								                        <div class="form-group">
+								                            <label class="col-sm-2 control-label inplabel">名称:</label>
+								                            <div class="col-sm-10">
+								                                <input type="text" class="form-control changeNode input" id="addNodename">
+								                            </div>
+								                        </div>
+								                        <div class="form-group">
+								                            <label class="col-sm-2 control-label inplabel">描述:</label>
+								                            <div class="col-sm-10">
+								                                <input type="text" class="form-control input changeNode" id="addDiscribe">
+								                            </div>
+								                        </div>
+														
+													</div>
+													<div class="modal-footer">
+														<button type="button" id="addright_btn" class="btn btn-primary">
+															提交添加
+														</button>
+														<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+														</button>
+								
+													</div>
+												</div><!-- /.modal-content -->
+											</div><!-- /.modal -->
+										</div>
+									
+									
+									
+								</div>
+								<!-- End Example Events -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- End Panel Other -->
+			</div>
+			<!-- 全局js -->
+	    <script src="../../../static/modules/plugin/jquery/jquery.min.js?v=2.1.4"></script>
+	    <script src="../../../static/modules/plugin/bootstrap/bootstrap.min.js?v=3.3.6"></script>
+    
+  		<script src="../../../static/modules/plugin/treetable/jquery.treetable.js"></script>
+  		<script src="../../../static/modules/plugin/bootstrap-table/bootstrap-table.min.js"></script>
+   		<script src="../../../static/modules/plugin/shake/shake.js" type="text/javascript" ></script>
+	    <script type="text/javascript">
+	         $("#example-advanced").treetable({ expandable: true });
+	         // Highlight selected row
+	
+			$("#example-advanced tbody").on("mousedown", "tr", function() {
+			
+			    $(".selected").not(this).removeClass("selected");
+			
+			    $(this).toggleClass("selected");
+			
+			});
+	    </script>
+	    <script type="text/javascript">
+	    
+	    	/********************全局变量************************/
+	    	//点击行的属性
+	    	var id,fid,name,sort,level;
+			// 课程ID  
+	    	var courseid = '#(course.id)';
+			//鼠标点击时的tr
+	      	var thisnode;
+	      	
+	      	//切割前
+	      	var qiegeqian_nodeid,qigeqian_nodefid;
+	      	
+	      	//用户修改/添加
+	      	var addNodename,addDiscribe,addname,addid,addsort,addlevel;
+	      	/********************全局变量************************/
+	      	
+	      	//START--添加节点操作函数*2
+	        function loadHtml(fid,id,name,sort,level){  
+	        	//图标
+	        	var leaf = false;
+	        	//添加行
+	            var str = '';  
+	            //操作
+	            var opstr= '';
+	            
+	            //判断操作
+	            if(level == 1){//章
+	            	id="chapter"+id;
+	            	fid="course"+fid;
+	            	opstr='<td><a href="#" class="del">删除</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" class="add">添加节目录</a></td>' ;
+	            }else if(level == 2){//节
+	            	id="section"+id;
+	            	fid="chapter"+fid;
+	            	opstr='<td><a href="#" class="del">删除</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" class="add">添加小节目录</a></td>' ;
+	            }else if(level == 3){//小节
+	            	id="part"+id;
+	            	fid="section"+fid;
+	            	leaf = true;
+	            	opstr='<td><a href="#" class="del">删除</a></td>' ;
+	            }
+	            //拼接行
+                str += '<tr data-node-id="' + id + '" data-parent-id="'+fid+ '" data-node-sort="'+sort+ '" data-node-level="'+level+'"  data-tt-branch="' + (leaf ? "false" : "true")+ '">' +   
+                        '<td>' +   
+                        (leaf ? '<span class="file"></span>' :'<span class="folder"></span>') +  
+                        name + '</td>' +   
+                        '<td>' +  name + '</td>)' +   
+                        opstr +   
+                        '</tr>';  
+	           
+	            return str;  
+	        } 
+	        //END--添加节点操作函数*2
+	        
+	        //START--树开始
+	        $(function(){  
+	            $("#example-basic").treetable({  
+	                nodeIdAttr: "nodeId",  
+	                parentIdAttr: "parentId",  
+	                stringCollapse: "收起",  
+	                stringExpand: "展开",  
+	                expandable: true,  
+	                //展开  
+	                onNodeExpand: function(){ 
+	                    var node = this;  
+	                }  
+	            }).on("click",".rev",function(e){
+//-----------------//START--修改节点点击操作
+	               /* e.preventDefault();  
+	                //修改
+	                thisnode = $(this).closest("tr");
+	                id = thisnode.data("node-id");  
+            		sort = thisnode.data("node-sort");
+            		name = thisnode.data("node-name");
+            		level = thisnode.data("node-level");
+            		
+            		//修剪id和fid
+					if(level == 0){
+						// 添加章
+						id = id.substring(6);
+						fid = 0;
+					}else if(level == 1){
+						// 添加节
+						id = id.substring(7);
+						fid = courseid;
+					}else if(level == 2){
+						// 添加小节
+						id = id.substring(7);
+						fid = fid.substring(7);
+					}
+					// 点击添加后，向后台发送数据
+					$.ajax({
+						type: "POST",
+						url: "/admin/course/updateTree",
+						data: {courseid : courseid, level : level,id : id},
+						dataType: "JSON",
+						success: function (response) {
+							if(response.code == 1){
+								// 获取信息成功
+								$("#updatesort").text(response.object);
+							}else{
+								// 获取信息失败
+								$("#updatesort").text("未获取到标题");
+							}
+						}
+					});
+					var tr= this.parentNode.parentNode;
+					var cells = tr.cells;
+					window.nodeUpdate = cells[0].childNodes[2];
+					window.nodeName = cells[0].childNodes[2].textContent;
+					console.log("nodeUpdate="+nodeUpdate+",nodeName="+nodeName);
+	            	//打开模态框
+	            	$("#addModal").modal("show");*/
+//-----------------//END--修改操作点击操作结束
+	            }).on("click",".del",function(e){  
+//-----------------//START--删除节点点击操作
+	                e.preventDefault();
+	               
+	                //获取节点属性
+	                thisnode = $(this).closest("tr")
+	                id = thisnode.data("node-id");  
+	                fid = thisnode.data("parent-id");//父id
+            		level = thisnode.data("node-level");
+	                var deletenode = thisnode.data("node-id");
+	                //修剪id和fid
+					if(level == 0){
+						// 添加章
+						id = id.substring(6);
+						fid = 0;
+					}else if(level == 1){
+						// 添加节
+						id = id.substring(7);
+						fid = courseid;
+					}else if(level == 2){
+						// 添加小节
+						id = id.substring(7);
+						fid = fid.substring(7);
+					}
+	                //传输节点属性
+	                $.ajax({
+	                 	type:"post",
+	                	url:"/admin/course/deleteTree",
+	                	data: {"id":id,"fid":fid,"level":level,"courseid":courseid},
+	                	dataType: "JSON",
+	                	success: function(response){
+	                		if(response.code == 1){
+	                			//删除成功
+	                			/*id = $(this).closest("tr").data("node-id");   */            
+                				$("#example-basic").treetable("removeNode",deletenode);
+	                		}else{
+	                			//删除失败
+	                			alert("删除失败！");
+	                		}
+	                	}
+	                });
+//-----------------//END--删除操作结束
+	            }).on("click",".add",function(e){  
+//-----------------//START--添加节点点击事件
+	            	e.preventDefault();
+	            	//获取节点属性
+	            	thisnode = $(this).closest("tr");
+	            	id = thisnode.data("node-id");
+            		sort = thisnode.data("node-sort");//序号
+            		name = thisnode.data("node-name");
+            		level = thisnode.data("node-level");
+            		fid = thisnode.data("parent-id");//父id
+            		
+            		qiegeqian_nodeid = id;
+            		qiegeqian_nodefid = fid;
+            		
+					//修剪id和fid
+					if(level == 0){
+						// 添加章
+						id = id.substring(6);
+						fid = 0;
+					}else if(level == 1){
+						// 添加节
+						id = id.substring(7);
+						fid = courseid;
+					}else if(level == 2){
+						// 添加小节
+						id = id.substring(7);
+						fid = fid.substring(7);
+					}
+					// 点击添加后，向后台发送数据
+					$.ajax({
+						type: "POST",
+						url: "/admin/course/addTree",
+						data: {courseid : courseid, level : level,id : id,fid : fid},
+						dataType: "JSON",
+						success: function (response) {
+							if(response.code == 1){
+								// 获取信息成功
+								$("#addsort").text(response.object);
+							}else{
+								// 获取信息失败
+								$("#addsort").text("未获取到标题");
+							}
+						}
+					});
+	            	//打开模态框
+	            	$("#addModal").modal("show"); 
+	            });
+//-----------------//END--添加节点点击事件
+	            
+	            
+//-----------------//START--修改模态框的确定按钮
+	            /*$("#right_btn").click(function(){
+            		//修改操作开始
+	            	var updateNodename = $("#updateNodename").val();
+	            	var updateDiscribe = $("#updateDiscribe").val();
+	            	//判断用户是否输入？1.输入：更改目录数据 2.未输入：提示输入
+	            	if(""==updateNodename||updateNodename==null||""==updateDiscribe||updateDiscribe==null){
+	            		//提示错误
+	            		$("#right_btn").attr("disabled",true);
+	            	}else{
+	            		$("#right_btn").attr("disabled",false);
+	            		$.ajax({
+	            			type: "post",
+	            			url: "/admin/course/updateTree",
+	            			data: {name : updateNodename,discribe : updateDiscribe},
+	            			success: function(response){
+	            				if(response.code == 1){
+	            					//提交成功
+	            					//修改节点
+	            					
+									/*var id = $(this).closest("tr").data("node-id");  
+					                var tr= this.parentNode.parentNode;
+									var cells = tr.cells;
+									window.nodeUpdate = cells[0].childNodes[2];
+									var nodeName = cells[0].childNodes[2].textContent;
+									$("#changeNode").attr("placeholder",nodeName);*/	            					
+					               
+	            				/*}else{
+	            					//提交失败
+	            					alert("修改失败！");
+	            				}
+	            			}
+	            		});
+	            		$("#myModal").modal('hide');  //手动关闭模态框
+	            	}
+	            	//清空输入框内容
+	            	$("#updateNodename").val("");
+	            	$("#updateDiscribe").val("");
+	            });*/
+//-----------------//END--修改模态框的确定按钮结束
+	            
+//-----------------//START--添加模态框确定按钮
+	            $("#addright_btn").click(function(){
+	            	//获取用户输入数据
+	            	addNodename = $("#addNodename").val();
+	            	addDiscribe = $("#addDiscribe").val();
+	            	//判断用户是否输入？1.输入：更改目录数据 2.未输入：提示输入
+	            	if(""==addNodename||addNodename==null||""==addDiscribe||addDiscribe==null){
+	            		//提示错误禁用提交按钮
+	            		/*$("#addright_btn").attr("disabled",true);*/
+	            		alert("不能为空");
+	            	}else{
+	            		
+	            		//提交按钮取消禁用
+	            		
+	            		//添加数据提交
+	            		$.ajax({
+	            			type: "post",
+	            			url: "/admin/course/saveTree",
+	            			data: {courseid : courseid, level : level,id : id,fid : fid,name : addNodename,discribe : addDiscribe},
+	            			success: function(response){
+	            				if(response.code == 1){
+	            					//提交成功
+	            					//添加节点
+	            					/*loadHtml(fid,id,name,sort,level)*/
+	            					addid = response.object.id;
+	            					addname = response.object.name;
+	            					addsort = response.object.sort;
+	            					addlevel = level+1;
+					                var html = loadHtml(id,addid,addname,addsort,addlevel);  
+					                var node = $("#example-basic").treetable("node",qiegeqian_nodeid);  
+					                $("#example-basic").treetable("loadBranch",node,html);  
+					                /*thisnode.find("td .file").removeClass("file").addClass("folder");*/ //修改节点图标 
+	            				}else{
+	            					//提交失败
+	            					alert("添加失败！");
+	            				}
+	            			}
+	            		});
+	            		$("#addModal").modal('hide');  //手动关闭模态框
+	            	}
+	            	//清空输入框内容
+	            	$("#addNodename").val("");
+	            	$("#addDiscribe").val("");
+	            });
+//-----------------//END--添加按钮函数
+	         
+	        }) 
+	        //END--树结束
+	        
+	    </script>  
+	</body>
+
+</html>

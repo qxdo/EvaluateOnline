@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>在线测评系统 | 管理员</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<link href="../../../static/modules/plugin/bootstrap/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+		<link href="../../../static/modules/plugin/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+		<link href="../../../static/modules/plugin/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+		<link href="../../../static/modules/plugin/animate/animate.css" rel="stylesheet">
+		<link href="../../../static/system/admin/css/style.css?v=4.1.0" rel="stylesheet">
+		<style>
+			.download-btn,.update-btn {
+				display: block;
+				height: 50px;
+				line-height: 50px;
+				vertical-align: middle;
+				margin: 0;
+				padding: 0;
+			}
+			.download-btn {
+				margin-bottom: 28px;
+			}
+			.modal-body {
+				height: 200px;
+			}
+		</style>
+	</head>
+
+	<body class="gray-bg">
+		<div class="wrapper wrapper-content animated">
+			<div class="ibox float-e-margins">
+				<!-- Panel Other -->
+				<div class="ibox float-e-margins">
+					<div class="ibox-title">
+						<h5>#if(type == "course")课程#elseif(type == "teahcer")教师#else班级#end信息表</h5>
+					</div>
+					<div class="ibox-content">
+						<div style="display: none;" class="alert alert-success alert-dismissable" id="success">
+							<button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> 删除成功
+						</div>
+						<div style="display: none;" class="alert alert-danger alert-dismissable" id="fail">
+							<button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> 删除失败！
+						</div>
+						<div class="row row-lg">
+							<div class="col-sm-12">
+								<!-- Example Events -->
+								<div class="example-wrap">
+									<div class="example">
+										#if(type == "course")
+										<div class="hidden-xs" id="listToolbar" role="group" style="height:54px;line-height:54px;vertical-align: middle;">
+											<a href="/admin/course/add" type="button" class="btn btn-outline btn-default">
+		                                        添加课程
+		                                    </a> &nbsp;&nbsp;
+											<button type="button" class="btn btn-outline btn-default" data-toggle="modal" data-target="#myModal">
+		                                        <a>批量添加</a>
+		                                    </button>
+										</div>
+										#end
+										<table id="listTableEvents" data-mobile-responsive="true" data-pagination="true">
+											<thead>
+												<tr>
+													<th data-field="listnum">序号</th>
+													<th data-field="id">ID</th>
+													#if(type == "course")
+													<th data-field="number">课程编号</th>
+													<th data-field="name">课程名称</th>
+													<th data-field="operation" data-formatter="actionCourseFormatter" data-events="actionCourseEvents">操作</th>
+													<!--<th data-field="distribute" data-formatter="distribFormatter" data-events="distribEvents">分配</th>-->
+													#elseif(type == "teacher")
+													<th data-field="number">教师工号</th>
+													<th data-field="name">教师名称</th>
+													<th data-field="distribute" data-formatter="distribFormatter" data-events="distribEvents">操作</th>
+													#elseif(type == "class")
+													<th data-field="number">班级编号</th>
+													<th data-field="name">班级名称</th>
+													<th data-field="distClass" data-formatter="distClassFormatter" data-events="distClassEvents">操作</th>
+													#end
+
+												</tr>
+											</thead>
+										</table>
+									</div>
+								</div>
+								<!-- End Example Events -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- End Panel Other -->
+			</div>
+			<!-- 模态框（Modal） -->
+			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			   <div class="modal-dialog">
+			       <div class="modal-content">
+			           <div class="modal-header">
+			               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			               <h3 class="modal-title" id="myModalLabel">批量导入班级</h3>
+			           </div>
+			           <div class="modal-body">
+			           		<button type="button" class="col-sm-12 btn btn-info download-btn">下载模板</button>
+							   <form id="uploadform" action="/admin/batchAdd" method="post" enctype="multipart/form-data"> 
+								   <label id="realBtn" class="col-sm-8  btn btn-default update-btn" style="width: 390px;margin-right: 13px;">
+								     <input type="file" id="fileinput" name="file" class="mFileInput" style="left:-9999px;position:absolute;">
+								     <span id="updatetext">点击选择上传文件</span>
+								</label>
+								<span class="col-sm-1"></span>
+								<button type="submit" class="col-sm-3 btn btn-info download-btn">批量导入</button>
+							</form>
+			           </div>
+			          
+			       </div><!-- /.modal-content -->
+			   </div><!-- /.modal -->
+			</div>
+			<!--END 模态框-->
+			<!-- 全局js -->
+			<script src="../../../static/modules/plugin/jquery/jquery.min.js?v=2.1.4"></script>
+			<script src="../../../static/modules/plugin/bootstrap/bootstrap.min.js?v=3.3.6"></script>
+			<!-- 自定义js -->
+			<script src="../../../static/system/admin/js/content.js?v=1.0.0"></script>
+			<!-- Bootstrap table -->
+			<script src="../../../static/modules/plugin/bootstrap-table/bootstrap-table.min.js"></script>
+			<script src="../../../static/modules/plugin/bootstrap-table-js/bootstrap-table.js"></script>
+			<script src="../../../static/modules/plugin/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
+			<!-- Peity -->
+			<!--<script src="../../../static/system/admin/js/list.js"></script>-->
+			<script type="text/javascript">
+                // Example Bootstrap Table Events
+                var url = '/admin/#(type)/list';
+				(function() {
+					$('#listTableEvents').bootstrapTable({
+						url: url,
+						search: true,
+						pagination: true,
+						showRefresh: true,
+						showToggle: true,
+						showColumns: true,
+						iconSize: 'outline',
+						toolbar: '#listToolbar',
+						icons: {
+							refresh: 'glyphicon-repeat',
+							toggle: 'glyphicon-list-alt',
+							columns: 'glyphicon-list'
+						},
+						columns: [{
+							field: 'listnum', //可不加  
+							title: '序号', //标题  可不加  
+							formatter: function(value, row, index) {
+								return index + 1;
+							}
+						}, {
+							checkbox: false
+						}]
+					});
+					$('#listTableEvents').bootstrapTable('hideColumn', 'id');
+				})();
+				/*表格行增加删除函数*/
+				function actionFormatter(value, row, index) {
+					return '<a class="mod" >修改</a> ' + '<a class="delete">删除</a>' + '&nbsp;&nbsp;<a class="dist" >分配添加</a>'+'&nbsp;&nbsp;<a class="distmanage" >分配管理</a>';
+				}
+				//课程操作
+				function actionCourseFormatter(value, row, index) {
+					/* return '<a class="mod" >修改</a> ' + '&nbsp;&nbsp;<a class="delete">删除</a> '  + '&nbsp;&nbsp;&nbsp;&nbsp;<a class="manage" >章节管理</a> '+'&nbsp;&nbsp;<a class="dist" >分配添加</a>'+'&nbsp;&nbsp;<a class="distmanage" >分配管理</a>'; */
+					return '<a class="mod" >修改</a> ' + '&nbsp;&nbsp;<a class="delete">删除</a> '  + '&nbsp;&nbsp;&nbsp;&nbsp;<a class="manage" >章节管理</a> ';
+				}
+				//添加分配列
+				function distribFormatter(value, row, index) {
+					return '<a class="dist" >分配添加</a>'+'&nbsp;&nbsp;<a class="distmanage" >分配管理</a>';
+				}
+				function distClassFormatter(value, row, index) {
+					return '<a class="dist" >分配添加</a>'+'&nbsp;&nbsp;<a class="distmanage" >分配管理</a>';
+				}
+				//表格  - 操作 - 事件
+				window.actionEvents = {
+					'click .mod': function(e, value, row, index) { //修改   
+						//修改操作
+						var id = row.id;
+						var number = row.number;
+						document.location.href = "/admin/update?number=" + number+"&id="+id;
+					},
+					'click .delete': function(e, value, row, index) { //删除
+						var id = row.id;
+						if(!confirm("确认要删除吗？")) {
+							return;
+						}
+						var id = row.id;
+						var number = row.number;
+
+						$.ajax({
+							type: "POST",
+							url: "/admin/delete",
+							data: {
+								"number": number,
+								"id":id
+							},
+							dataType: "JSON",
+							success: function(data) {
+								if(data.code == 1) {
+									//删除成功
+									$("#success").show();
+									$("#listTableEvents").bootstrapTable('remove', {
+										field: 'id',
+										values: [parseInt(id)]
+									});
+									setTimeout(function() {
+										$("#success").hide();
+									}, 2000);
+								} else {
+									$("#fail").show();
+									setTimeout(function() {
+										$("#fail").hide();
+									}, 2000);
+								}
+							}
+						});
+					},
+					'click .dist': function(e, value, row, index) { //分配
+						var id = row.id;
+						var number = row.number;
+						window.location.href = "/admin/#(type)/distribute?number="+number+"&id="+id;
+					},
+					'click .distmanage': function(e, value, row, index) { //分配管理
+						var id = row.id;
+						var number = row.number;
+						window.location.href = "/admin/#(type)/distributemanage?number="+number+"&id="+id;
+					}
+				}
+				window.distribEvents = {
+					'click .dist': function(e, value, row, index) { //分配
+						var id = row.id;
+						var number = row.number;
+						window.location.href = "/admin/#(type)/distribute?number="+number+"&id="+id;
+					},
+					'click .distmanage': function(e, value, row, index) { //分配管理
+						var id = row.id;
+						var number = row.number;
+						window.location.href = "/admin/#(type)/distributemanage?number="+number+"&id="+id;
+					}
+				}
+				window.distClassEvents = {
+					'click .dist': function(e, value, row, index) { //分配
+						var id = row.id;
+						var number = row.number;
+						window.location.href = "/admin/#(type)/distribute?number="+number+"&id="+id;
+					},
+					'click .distmanage': function(e, value, row, index) { //分配管理
+						var id = row.id;
+						var number = row.number;
+						window.location.href = "/admin/#(type)/distributemanage?number="+number+"&id="+id;
+					}
+				}
+				//课程操作函数
+				window.actionCourseEvents = {
+					'click .mod': function(e, value, row, index) { //修改   
+						//修改操作
+						var id = row.id;
+						var number = row.number;
+						document.location.href = "/admin/course/update?number=" + number+"&id="+id;
+					},
+					'click .delete': function(e, value, row, index) { //删除
+						if(!confirm("确认要删除吗？")) {
+							return;
+						}
+						var id = row.id;
+						var number = row.number;
+
+						$.ajax({
+							type: "POST",
+							url: "/admin/course/delete",
+							data: {
+								"number": number,
+								"id":id
+							},
+							dataType: "JSON",
+							success: function(data) {
+								if(data.code == 1) {
+									//删除成功
+									$("#success").show();
+									$("#listTableEvents").bootstrapTable('remove', {
+										field: 'id',
+										values: [parseInt(id)]
+									});
+									setTimeout(function() {
+										$("#success").hide();
+									}, 2000);
+								} else {
+									$("#fail").show();
+									setTimeout(function() {
+										$("#fail").hide();
+									}, 2000);
+								}
+							}
+						});
+					},
+					'click .dist': function(e, value, row, index) { //分配
+						var id = row.id;
+						var number = row.number;
+						window.location.href = "/admin/#(type)/distribute?number="+number+"&id="+id;
+					},
+					'click .manage' : function(e, value, row, index) { //管理
+						var id = row.id;
+						var number = row.number;
+						window.location.href = "/admin/chapter?number="+number+"&id="+id;
+					},
+					'click .distmanage': function(e, value, row, index) { //分配管理
+						var id = row.id;
+						var number = row.number;
+						window.location.href = "/admin/#(type)/distributemanage?number="+number+"&id="+id;
+					}
+				}
+
+				function upload(){
+					$.ajax({
+						type: "POST",
+						url: "/admin/batchAdd",
+						data: $("#uploadform").serialize(),
+						dataType: "JSON",
+						success: function (response) {
+							
+						}
+					});
+				}
+
+			</script>
+	</body>
+
+</html>

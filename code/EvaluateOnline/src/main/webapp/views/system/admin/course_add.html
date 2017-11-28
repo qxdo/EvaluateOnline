@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线测评系统 | 管理员</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../../static/modules/plugin/bootstrap/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../../static/modules/plugin/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="../../../static/modules/plugin/iCheck/custom.css" rel="stylesheet">
+    <link href="../../../static/modules/plugin/animate/animate.css" rel="stylesheet">
+    <link href="../../../static/system/admin/css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated">
+        <div style="display: none;" class="alert alert-success alert-dismissable" id="success">
+	        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+	        添加成功 
+	    </div>
+    	<div style="display: none;" class="alert alert-danger alert-dismissable" id="fail">
+	        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+	        课程已存在 
+	    </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>添加课程信息</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <form method="get" class="form-horizontal" id="addCourseForm">
+                        	<div class="form-group">
+                                <label class="col-sm-4 col-md-4 control-label inplabel">课程编号:</label>
+                                <div class="col-sm-8 col-md-8">
+                                    <input @keyup="changevalue" v-model="coursenumber" type="text" type="text" name="number" id="number" class="form-control input">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 col-md-4 control-label inplabel">课程名称:</label>
+                                <div class="col-sm-8 col-md-8">
+                                    <input @keyup="changevalue" v-model="coursename" type="text" name="name" id="name" class="form-control input">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-md-4 col-sm-offset-4 col-md-offset-4 " style="text-align: center;">
+                                    <button v-bind:disabled="disabled" onclick="saveCourse()" id="save_btn" class="btn btn-primary save_btn" type="button">#if(course == null)添加#else修改#end</button>
+                                    <div style="display: inline-block;width: 50px;height: 37px;"></div>
+                                    <button class="btn btn-white cancel_btn" onclick="window.history.back();" type="button">取消</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 全局js -->
+    <script src="../../../static/modules/plugin/jquery/jquery.min.js?v=2.1.4"></script>
+    <script src="../../../static/modules/plugin/bootstrap/bootstrap.min.js?v=3.3.6"></script>
+    <!-- 自定义js -->
+    <script src="../../../static/system/admin/js/content.js?v=1.0.0"></script>
+    <!-- iCheck -->
+    <script src="../../../static/modules/plugin/iCheck/icheck.min.js"></script>
+    <script type="text/javascript" src="../../../static/modules/plugin/vue/vue.js"></script>
+    <script>
+
+        // 添加课程
+        // addCourseForm
+        new Vue({
+			el: '#addCourseForm',
+			data: {
+                coursenumber: '#if(course != null)#(course.number)#end',
+                coursename: '#if(course != null)#(course.name)#end',
+                disabled: #if(course != null) false #else true #end
+			},
+			methods: {
+				changevalue:function(){
+                    if(this.coursenumber == "" || this.coursename == ""){
+                        this.disabled = "disabled";
+                    }else{
+                        this.disabled = false;
+                    }
+				}
+			}
+		}) 
+
+        $(document).ready(function () {
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+        });
+       
+        // 校验课程是否存在
+       $("#number").blur(function(){
+            var num = $("#number").val();
+            if(num != ""){
+        		$.ajax({
+	        		type: "POST",
+					url: "/admin/course/findCourseByNumber",
+					data: {number: num},
+					dataType: "JSON",
+					success:function(data){
+						if(data.code==1){
+                            //课程已存在
+                            $("#fail").show();
+                            setTimeout(function(){
+                                $("#fail").hide();
+                                $("#number").val("");
+                            },1500);
+						}
+					}
+	        	});
+        	}
+        })
+       
+       $("#number").focus(function(){
+            $("#error").hide();
+        })
+       
+        // 添加课程信息
+        function saveCourse(){
+            // 获取课程编号 
+            var num = $("#number").val();
+            // 获取课程名称
+            var name = $("#name").val();
+            if("" != name &&"" !=  num && name!=null && num != null){
+                // 课程信息不能为空
+                $.ajax({
+                    type: "POST",
+                    url: "/admin/course/save",
+                    data: $("#addCourseForm").serialize(),
+                    dataType: "JSON",
+                    success: function (response) {
+                        if(response.code == 1){
+                            // 保存课程信息成功
+                            $("#success").show();
+                            setTimeout(function(){
+                                $("#success").hide();
+                                document.location.href = "/admin/course/yw"
+                            },1500);
+                        }else{
+                            // 保存课程信息失败
+                            $("#fail").show();
+							setTimeout(function(){$("#fail").hide();},1500);
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+
+    
+    
+
+</body>
+
+</html>

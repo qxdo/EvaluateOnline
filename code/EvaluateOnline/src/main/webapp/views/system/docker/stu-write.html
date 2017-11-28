@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <meta name="renderer" content="webkit">
+	
+	    <title></title>
+	
+	    <meta name="keywords" content="">
+	    <meta name="description" content="">
+	
+	    <!--[if lt IE 9]>
+	    <meta http-equiv="refresh" content="0;ie.html" />
+	    <![endif]-->
+	
+	    <link rel="shortcut icon" href="favicon.ico">
+	    <link href="../../../static/modules/plugin/bootstrap/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+	    <link href="../../../static/modules/plugin/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+	    <link href="../../../static/modules/plugin/animate/animate.css" rel="stylesheet">
+	    <link href="../../../static/system/admin/css/style.css?v=4.1.0" rel="stylesheet">
+	    
+		<link href="../../../static/system/student/css/write.css" rel="stylesheet" />
+		<link href="../../../static/modules/plugin/jQueryUI/jquery-ui.css" rel="stylesheet" />
+		<style>
+		textarea{
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			}
+		.qp-test {
+			padding: 0px;
+		}
+		.qp-tm1 {
+			border-radius: 0 !important;
+			height: 45px;
+			line-height: 45px;
+			vertical-align: middle;
+			background: rgb(245, 247, 247);
+			/*background: rgb(217, 237, 247);*/
+			border: 1px solid rgb(231, 234, 236);
+			padding-left: 12px;
+		}
+		.left_content {
+			padding-left: 12px;
+			padding-right: 12px;
+		}
+		ol {
+			padding: 0 12px;
+		}
+		.m-b,.sourcefile,.headerfile {
+			height: 45px;
+			line-height: 45px;
+			vertical-align: middle;
+		}
+		.btn{
+			border-radius: 0;
+			height: 36px;
+			line-height: 15px;
+			vertical-align: middle;
+			margin: 0 !important;
+			margin-right: 5px !important;
+		}
+		.qp-bc {
+			height: 55px;
+		}
+		.tab-title1,.tab-title2 {
+			font-size: 17px;
+		}
+		</style>
+		<script>
+	    	function btn(){
+	    		$("#qp-btn-up").toggle();
+	    		$("#qp-btn-down").toggle();
+	    		$('#jsRunInfo-none').toggle();
+	    		$('#jsRunInfo-black').toggle();
+	    	}
+	    	function btn2(){
+	    		$("#qp-btn-up").show();
+	    		$("#qp-btn-down").hide();
+	    		$('#jsRunInfo-none').show();
+	    		$('#jsRunInfo-black').hide();
+	    	}
+	    </script>
+	</head>
+	<body>
+		<div>
+			<div class="qp-left">  					    
+				<div class="qp-test">
+					<p class="qp-tm1">
+						<span class="qp-tm2">题目： </span>
+						<span id="title"></span>
+					</p>
+					<div class="left_content">
+						<h2 class="qp-rw">任务描述:</h2>
+
+						 <div class="form-group">				   
+						    <textarea id="content" class="col-sm-12 col-md-12" style="height: 300px;border-style:none;border-color: #FFFFFF;resize:none" readonly="readonly" ></textarea>		   
+						  </div>
+						  <div class="col-sm-12 col-md-12"style="padding-bottom: 40px;"></div>
+						<h2 class="qp-rw">代码模板:</h2>
+						<textarea id="template" class="col-sm-12 col-md-12" style="height: 300px;border-style:none;border-color: #FFFFFF;resize:none" readonly="readonly"></textarea>
+						
+						<!--<div style="height: 50px;"></div>-->
+					</div>
+				</div>
+			</div>
+			<div class="qp-right">
+				<div class="col-sm-6" style="width: 100%;">
+					<div class="tabs-container">
+						<ul class="nav nav-tabs">
+							<li class="active">
+								<a data-toggle="tab" href="#tab-1" class="tab-title1">
+									源文件
+								</a>
+							</li>
+							<li>
+								<a data-toggle="tab" href="#tab-2" class="tab-title2">
+									头文件
+								</a>
+							</li>
+						</ul>
+						
+						<form id="inputData" method="post">
+							<div class="tab-content">
+								<div id="tab-1" class="tab-pane active">
+									<div class="panel-body">
+										<div class="input-group m-b">
+											<span class="input-group-addon">请输入源文件名</span>
+											<!-- 源文件名称 -->
+											<input class="form-control sourcefile" type="text" id="srcname"  name="srcname" />
+											<span class="input-group-addon">.cpp</span>
+										</div>
+										<!-- 源文件书写 -->
+										<div id="qp-ywj" ></div>
+										<!-- 其他隐藏属性参数，需要传值给controller -->
+										<!-- 题号 -->
+										<input name="dir" style="display: none" id="dir"> 
+										<!-- 头文件代码，从插件中获取到的 -->
+										<textarea rows="50" cols="20" style="display: none" name="header" id="header"></textarea>
+										<!--学生ID -->
+										<!-- <input name="sid" style="display: none" id="sid" value="123">  -->
+										<!-- 源代码，从 插件种获取到的 -->
+										<textarea rows="50" cols="20" id="src" style="display: none" name="src"></textarea>
+								
+										<!-- 判断是否显示日志 -->
+										<div onclick="btn();" class="qp-code" >
+											<i style="display: none;line-height: 12px;" id="qp-btn-up" class="fa fa-angle-up"></i>
+											<i style="display: block;line-height: 12px;" id="qp-btn-down" class="fa fa-angle-down"></i>
+										</div>
+										
+										<div class="qp-bc">
+											<a class="btn btn-warning btn-lg" onclick="compile()" style="margin: 5px 0px 0 6px;">编译</a>
+											<a class="btn btn-info btn-lg" onclick="runDocker()" style="margin: 5px 0px 0 0px;">运行</a>
+											<a class="btn btn-success btn-lg" onclick="judgeDocker()" style="margin: 5px 5px 0 0px;">评测</a>										
+										</div>
+										<!-- 日志显示 -->
+										<div id="jsRunInfo-black"  style="display: block;">
+											<div class="qp-nra">
+											
+											</div>
+										</div>
+										<div id="jsRunInfo-none" style="display: none;height:auto;">
+											<div class="qp-nr" id="logs">
+												
+													
+												
+											</div>
+										</div>
+									</div>
+								</div>
+								<div id="tab-2" class="tab-pane">
+									<div class="panel-body">
+										<div class="input-group m-b">
+											<span class="input-group-addon">请输入头文件名:</span>
+											<input class="form-control headerfile" type="text" name="headername" id="headername"/>
+											<span class="input-group-addon">.h</span>
+										</div>
+										<!-- 头文件的书写 -->
+										<div id="qp-twj"></div>
+									</div>
+								</div>
+							</div>
+						</form>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+
+		<div id="dialog-modal" title=" 在下面输入 ./run, 以启动你的程序 
+		请不要在WiFi环境下运行"
+		     style="display: none; padding: 0; overflow: hidden;">
+		    <iframe id="tty" frameborder="0" width="100%" height="100%" scrolling="no"></iframe>
+		</div>
+		
+		 <!-- 全局js -->
+	    <script src="../../../static/modules/plugin/jquery/jquery.min.js?v=2.1.4"></script>
+	    <script src="../../../static/modules/plugin/bootstrap/bootstrap.min.js?v=3.3.6"></script>
+	    <script src="../../../static/modules/plugin/metisMenu/jquery.metisMenu.js"></script>
+	    <script src="../../../static/modules/plugin/slimscroll/jquery.slimscroll.min.js"></script>
+	    <script src="../../../static/modules/plugin/layer/layer.min.js"></script>
+	    <!-- 自定义js -->
+	    <script src="../../../static/system/admin/js/hAdmin.js?v=4.1.0"></script>
+	    <script type="text/javascript" src="../../../static/system/admin/js/index.js"></script>
+	    <!-- 第三方插件 -->
+	    <script src="../../../static/modules/plugin/pace/pace.min.js"></script>
+	    <!-- 自定义js -->
+	    <script src="../../../static/system/admin/js/content.js?v=1.0.0"></script>
+		<script src="../../../static/system/student/ace/ace.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../../static/modules/plugin/jQueryUI/jquery-ui.min.js"></script>
+		
+		<script type="text/javascript">
+		
+		var editor1 = ace.edit("qp-ywj");//获取ace对象sfcontent
+		editor1.setTheme("ace/theme/monokai");//设置ace主题
+		editor1.getSession().setMode("ace/mode/c_cpp");//获取对应API
+		editor1.onPaste= function(text){alert("禁止粘贴代码");return false;};//禁止粘贴代码
+		
+		var editor2 = ace.edit("qp-twj");//获取ace对象headercontent
+		editor2.setTheme("ace/theme/monokai");//设置ace主题
+		editor2.getSession().setMode("ace/mode/c_cpp");//获取对应API
+		editor2.onPaste= function(text){alert("禁止粘贴代码");return false;};//禁止粘贴代码
+		
+		var studentid;
+		var questionid;
+		 $(document).ready(function () {
+			 var r = window.location.search;
+			 r = r.substring(r.indexOf("?"),r.length);
+			 var id = r.substring(4);
+			 
+			 
+			 
+			 $("#dir").val(id);
+			 $.ajax({  
+		            url:"/student/experiment/getQuestionByQuestionId",
+		            
+		            type:"post",  
+		            data:{"questionId":id},
+		            dataType:"json",   
+		        }).done(function(data){
+	        	
+		        	var title = data.title;
+		        	var content = data.content;
+		        	var template = data.template;
+		        	 studentid = data.studentid;
+		        	 questionid = data.questionid;
+		        	var hfname = data.hfname||'';
+		        	var sfname = data.sfname||'';
+		        	var isWrite = data.isWrite;
+		        	var hfcontent = data.hfcontent||'';
+		        	var sfcontent = data.sfcontent||'';	
+
+		        	$('#title').text(title);
+		        	$('#content').text(content);		   
+		        	$('#template').text(template);
+		        	
+		        	$('#srcname').val(sfname);
+		        	$('#headername').val(hfname);
+
+		        	if(sfcontent != null && sfcontent != ''){
+		        		editor1.setValue(data.sfcontent);
+		        	}else{
+		        		editor1.setValue(data.template);
+		        	}
+		        	if(hfcontent != null && hfcontent != ''){
+		        		editor2.setValue(data.hfcontent);
+		        	}
+		        	
+
+		        	if(isWrite == "yes"){
+		        		
+		        		if(hfname != null &&  hfname.trim() != ''){		        			
+			        		 document.getElementById("headername").readOnly=true;
+						}
+			        	if(sfname != null  && sfname.trim() != ''){			        		
+			        		 document.getElementById("srcname").readOnly=true;
+						}		        		
+		        	}
+		        	
+		        	
+		       }) 
+		 });
+
+			
+			
+			
+			// 开启请求
+			 function compile() {
+				$('#logs').html("");
+				btn2();
+				$('#logs').html("正在准备编译环境...<br/>");
+				
+				
+				var compileFlag=new Boolean(true); 
+				
+				var header = editor2.getValue();
+				var src = editor1.getValue();
+				var srcname = $("#srcname").val();
+				var headername = $("#headername").val();
+				if(src==null||src.trim()==""){
+					$('#logs').append("<li>源文件不能为空</li>");
+					compileFlag = false;
+				}
+				if(srcname==null||srcname.trim()==""){
+					$('#logs').append("<li>源文件名称不能为空</li>");
+					compileFlag = false;
+				}else {
+					var reg = new RegExp('[^\\w\*]');
+					if(reg.test(srcname)){
+						compileFlag = false;
+						$('#logs').append("<li>源文件名称不能包含符号或空格</li>");
+					}else{
+						document.getElementById("srcname").readOnly=true;
+					}
+				}
+				if(headername!=null&&headername.trim()!=""){
+					if(header==null||header.trim()==""){
+						$('#logs').append("<li>头文件不能为空</li>");
+						compileFlag = false;
+					}
+				}
+				if(header!=null&&header.trim()!=""){
+					if(headername==null||headername.trim()==""){
+						$('#logs').append("<li>头文件名称不能为空</li>");
+						compileFlag = false;						
+					}else {
+						var reg = new RegExp('[^\\w\*]');
+						if(reg.test(headername)){
+							compileFlag = false;
+							$('#logs').append("<li>头文件名称不能包含符号或空格</li>");
+						}else{
+							 document.getElementById("headername").readOnly=true;
+						}
+					}
+				}								
+		 		if(compileFlag){
+		 			//alert(compileFlag);
+		 			$('#header').val(editor2.getValue());
+			    	
+			    	$('#src').val(editor1.getValue());
+			        
+			       //form 序列化
+			        var arr = $('#inputData').serialize();  
+			        $.param(arr); 
+			        
+			        $.ajax({  
+			            url:"/docker/compileToDocker",  
+			            data:arr,  
+			            type:"post",  
+			            dataType:"json",   
+			        }).done(function(data){
+			        	var result = data.result;	        	
+			        	$('#logs').append(result+'<br/>');
+			        }); 
+		 		}
+				
+		    	
+		    }
+			
+			//评测
+			 function judgeDocker() {
+				 $('#logs').html("");
+					btn2();
+					$('#logs').html("正在准备评测环境...<br/>");
+			        var directory =  $('#dir').val();
+			      //  alert(directory);
+			        
+			        $.ajax({  
+			            url:"/docker/judgeToDocker",  
+			            data:{"dir":directory},  
+			            type:"post",  
+			            dataType:"json",   
+			        }).done(function(data){
+			        	var re = data.result;			        	
+			        	$('#logs').append(re+'<br/>');
+			        }); 
+			    }	
+			
+			 function runDocker() {
+				 $('#logs').html("");
+					btn2();
+				  $('#logs').html("正在准备运行环境...<br/>");
+				 var directory =  questionid;
+			        $.ajax({  
+			            url:"/docker/runToDocker",  
+			            data:{"dir":directory},  
+			            type:"post",  
+			            dataType:"json",   
+			        }).done(function(data){
+			        	var re = data.result;
+			        	if (re == "success") {		      
+			        		$("#dialog-modal").dialog({
+						            width : 550,
+						            height : 400,
+						            modal : true,
+						            close : function(event, ui) {
+						            	$.get("/docker/stopToDocker");
+						            }
+						        });			        	
+			                var tty = $("#tty");
+			                var port = 20000+studentid;
+			                tty.attr('src','http://61.163.231.199:'+port);
+			                tty.load(function() {
+			                        var wn = document.getElementById('tty').contentWindow;			                     
+			                        wn.postMessage('ok', '*');
+			                        wn.focus();
+			                 });
+			        	}else {
+			                $("#logs").append("<h4>容器启动失败</h4>");
+			            }
+			        });   
+			    }
+		</script>
+
+	</body>
+</html>

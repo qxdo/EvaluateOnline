@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线测评系统 | 教师</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../../static/modules/plugin/bootstrap/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../../static/modules/plugin/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="../../../static/modules/plugin/animate/animate.css" rel="stylesheet">
+    <link href="../../../static/system/admin/css/style.css?v=4.1.0" rel="stylesheet">
+		<style>
+			body{
+				margin: 0;
+				padding: 0;
+				overflow-x: hidden;
+			}
+			#exprientForm {
+				/*border: 1px solid #000000;*/
+			}
+			.row {
+				padding: 0px 12px;
+				/*border: 1px solid #E38D13;*/
+				/*height: */
+			}
+			.form-group {
+				display: inline-block;
+				padding: 0;
+			}
+			.input {
+				width: 219px;
+			}
+			.inplabel {
+				text-align: right;
+			}
+			.row1 {
+				height: 45px;
+				line-height: 45px;
+				vertical-align: middle;
+				background: rgb(223, 240, 216);
+			}
+			.rowarea {
+				padding: 0;
+			}
+			.rowlabel {
+				height: 45px;
+				line-height: 45px;
+				vertical-align: middle;
+			}
+			.btn-info {
+				margin-right: 25px;
+			}
+			.row-btn{
+				
+			}
+			.inplabel {
+				font-size: 15px;
+			}
+			.alert {
+				position: fixed;
+				width: 50%;
+				top: 10px;
+				left: 25%;
+				z-index: 1111;
+			}
+		</style>
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated">
+    	<div style="display: none;" class="alert alert-danger alert-dismissable" id="savefail">
+	        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+	        请检查是否填写完毕
+	    </div>
+	    <div style="display: none;" class="alert alert-success alert-dismissable" id="success">
+	        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+	        实验操作成功 
+	    </div>
+    	<div style="display: none;" class="alert alert-danger alert-dismissable" id="fail">
+	        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+	        实验操作失败
+	    </div>
+	    <div style="display: none;" class="alert alert-danger alert-dismissable" id="scorefail">
+	        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+	        分值只能是数字
+	    </div>
+        <div class="ibox float-e-margins"> 
+        <!-- Panel Other -->
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5 style="font-size: 18px;">添加学生实验</h5>
+            </div>
+            <div class="ibox-content">
+                <div class="row row-lg">
+                    <div class="col-sm-12">
+                        <!-- Example Events -->
+                        <div class="example-wrap">
+                            <div class="example">
+                            	<form id="exprientForm">
+
+									<div style="display: none;" class="row row1">
+										<div class="row row2">
+											<label class="control-label inplabel">实验ID:</label>
+										</div>
+										<div class="row rowarea">
+											<input value="#if(null!=experiment)#(experiment.question.id)#end" type="text" id="id" name="id" class="form-control input"> 
+										</div>
+									</div>
+
+                            		<div class="row row1">
+                            			<div class="form-group col-sm-6 sol-md-6">
+			                                <label class="control-label inplabel">标题:</label>
+			                                <input value="#if(null!=experiment)#(experiment.question.title)#end" type="text" id="title" name="title" class="form-control input"> 
+			                            </div>
+			                            <div class="form-group  col-sm-6 sol-md-6">
+			                                <label class="control-label inplabel">分值:</label>
+			                                <input type="text" value="#if(null!=experiment)#(experiment.score)#end" id="score" name="score" class="form-control input" onblur="checkScore(this.value)"> 
+			                            </div>
+                            		</div>
+                            		<div class="row row2">
+                            			<label class="control-label inplabel">内容:</label>
+                            		</div>
+                            		<div class="row rowarea">
+                            			<textarea name="content" id="content" class="form-control" rows="7">#if(null!=experiment)#(experiment.question.content)#end</textarea>
+                            		</div>
+                            		<div class="row rowlabel">
+                            			<label class="control-label inplabel">关键字:</label>
+                            		</div>
+                            		<div class="row rowarea">
+                            			<textarea name="keywords" id="keywords" class="form-control" rows="7">#if(null!=experiment)#(experiment.question.keywords)#end</textarea>
+                            		</div>
+                            		<div class="row rowlabel">
+                            			<label class="control-label inplabel">输入:</label>
+                            		</div>
+                            		<div class="row rowarea">
+                            			<textarea name="input" id="input" class="form-control" rows="7">#if(null!=experiment)#(experiment.question.input)#end</textarea>
+                            		</div>
+                            		<div class="row rowlabel">
+                            			<label class="control-label inplabel">输出:</label>
+                            		</div>
+                            		<div class="row rowarea">
+                            			<textarea name="output" id="output" class="form-control" rows="7">#if(null!=experiment)#(experiment.question.output)#end</textarea>
+                            		</div>
+                            		<div class="row rowlabel">
+                            			<label class="control-label inplabel">模板:</label>
+                            		</div>
+                            		<div class="row rowarea">
+                            			<textarea name="template" id="editor" style="height: 500px;font-size: 18px;margin-bottom: 22px;" class="form-control" rows="7">#if(null!=experiment)#(experiment.question.template)#end</textarea>
+                            		</div>
+                            		<div class="row row-btn pull-right">
+										#if(null!=experiment)
+										<button onclick="updateExperiment()" type="button" class="btn btn-lg btn-info">修改</button>
+										#else
+										<button onclick="addExperiment()" type="button" class="btn btn-lg btn-info">完成</button>
+										#end
+                            			<button onclick="window.history.back()" type="button" class="btn btn-lg btn-default">返回</button>
+                            		</div>
+                            	</form>
+                            </div>
+                        </div>
+                        <!-- End Example Events -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Panel Other -->
+    </div>
+
+    <!-- 全局js -->
+    <script src="../../../static/modules/plugin/jquery/jquery.min.js?v=2.1.4"></script>
+    <script src="../../../static/modules/plugin/bootstrap/bootstrap.min.js?v=3.3.6"></script>
+    <!-- 自定义js -->
+    <script src="../../../static/system/admin/js/content.js?v=1.0.0"></script>
+	<!-- ace -->
+	<script src="../../../static/modules/plugin/ace/ace.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		//var editor = ace.edit("editor");//获取ace对象
+		//editor.setTheme("ace/theme/monokai");//设置ace主题
+		//editor.getSession().setMode("ace/mode/c_cpp");//获取对应API
+		//editor.onPaste= function(text){alert("禁止粘贴代码");return false;};//禁止粘贴代码
+
+        // var template = editor.getValue();
+
+        var courseid = '#(courseid)';
+        var chapterid = '#(chapterid)';
+        var sectionid = '#(sectionid)';
+        var partid = '#(partid)';
+        
+		//分值校验函数
+		function checkScore(str){
+			var reg = /^[0-9]*$/;
+			if(reg.test(str)){
+	   		  return true;
+		   }else{
+		   	$("#scorefail").show();
+		   	setTimeout(function(){$("#scorefail").hide();},1500);
+	   		return false;
+		   }
+		}
+		
+        // 添加实验
+        function addExperiment(){
+            // var param = {courseid: courseid, chapterid: chapterid, sectionid: sectionid, partid: partid, score: score, question : $("#exprientForm").serialize()};
+            var title = $("#title").val();
+			var content = $("#content").val();
+			var score = $("#score").val();
+			var keywords = $("#keywords").val();
+			var input = $("#input").val();
+			var output = $("#output").val();
+			var template = editor.val();
+			if(checkScore(score) && "" != title && "" != content && "" != score && "" != keywords){
+				$.ajax({
+                type: "POST",
+                url: "/teacher/course/saveexperiment",
+                data: {
+                        title: title,
+						content: content,
+						score:score,
+						keywords: keywords,
+						input: input,
+						output: output,
+						template: template,
+                        courseid : courseid, 
+                        chapterid : chapterid,
+                        sectionid : sectionid,
+                        partid : partid
+                    },
+	                dataType: "JSON",
+	                success: function (response) {
+	                    if(response.code == 1){
+	                        // 添加实验成功
+	                        $("#success").show();
+							setTimeout(function(){
+								$("#success").hide();
+								window.history.back();
+								location.reload();
+							},1500);
+	                    }else{
+	                        // 添加实验失败
+	                        $("#fail").show();
+							setTimeout(function(){
+								$("#fail").hide();
+							},1500);
+	                    }
+	                }
+	            });
+			}else{
+				$("#savefail").show();
+				setTimeout(function(){
+					$("#savefail").hide();
+				},1500);
+			}
+			
+        }
+
+		// 修改课程实验
+		function updateExperiment(){
+			$.ajax({
+				type: "POST",
+				url: "/teacher/course/saveupdateexperiment",
+				data: $("#exprientForm").serialize(),
+				dataType: "JSON",
+				success: function (response) {
+					if(response.code == 1){
+						// 实验修改成功
+						$("#success").show();
+						setTimeout(function(){
+							$("#success").hide();
+							window.history.back();
+							location.reload();
+						},1500);
+					}else{
+						// 实验修改失败
+						$("#fail").show();
+						setTimeout(function(){
+							$("#fail").hide();
+						},1500);
+					}
+				}
+			});
+		}
+
+	</script>
+</body>
+</html>

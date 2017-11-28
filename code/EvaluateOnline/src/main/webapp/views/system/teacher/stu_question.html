@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线测评系统 | 教师</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../../static/modules/plugin/bootstrap/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../../static/modules/plugin/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="../../../static/modules/plugin/animate/animate.css" rel="stylesheet">
+    <link href="../../../static/system/admin/css/style.css?v=4.1.0" rel="stylesheet">
+		<style>
+			body{
+				margin: 0;
+				padding: 0;
+				overflow-x: hidden;
+			}
+			#exprientForm {
+				/*border: 1px solid #000000;*/
+			}
+			.row {
+				padding: 0px 12px;
+				/*border: 1px solid #E38D13;*/
+				/*height: */
+			}
+			.form-group {
+				display: inline-block;
+				padding: 0;
+			}
+			.input {
+				width: 219px;
+			}
+			.inplabel {
+				text-align: right;
+			}
+			.row1 {
+				height: 45px;
+				line-height: 45px;
+				vertical-align: middle;
+				background: rgb(223, 240, 216);
+			}
+			.rowarea {
+				padding: 0;
+			}
+			.rowlabel {
+				height: 45px;
+				line-height: 45px;
+				vertical-align: middle;
+			}
+			.btn-info {
+				margin-right: 25px;
+			}
+			.row-btn{
+				
+			}
+			.inplabel {
+				font-size: 15px;
+			}
+			.alert {
+				position: fixed;
+				width: 50%;
+				top: 10px;
+				left: 25%;
+				z-index: 1111;
+			}
+		</style>
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated">
+    	<div style="display: none;" class="alert alert-danger alert-dismissable" id="savefail">
+	        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+	        请检查是否填写完毕
+	    </div>
+	    <div style="display: none;" class="alert alert-success alert-dismissable" id="success">
+	        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+	        实验操作成功 
+	    </div>
+    	<div style="display: none;" class="alert alert-danger alert-dismissable" id="fail">
+	        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+	        实验操作失败
+	    </div>
+	    <div style="display: none;" class="alert alert-danger alert-dismissable" id="scorefail">
+	        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+	        分值只能是数字
+	    </div>
+        <div class="ibox float-e-margins"> 
+        <!-- Panel Other -->
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5 style="font-size: 18px;">查看学生实验内容</h5>
+            </div>
+            <div class="ibox-content">
+                <div class="row row-lg">
+                    <div class="col-sm-12">
+                        <!-- Example Events -->
+                        <div class="example-wrap">
+                            <div class="example">
+                            		<div class="row row1">
+                            			<div class="form-group col-sm-12 sol-md-12">
+			                                <label class="control-label inplabel">头文件:</label>
+			                                <input value="#if(null!=experiment)#(experiment.hfname)#end" type="text" id="title" name="title" readonly="readonly" class="form-control input"> 
+			                            </div>
+                            		</div>                          		                
+                            		<div class="row row2"></div>
+                            		<div class="row rowarea">
+                            			<div name="hfcontent" id="heditor" style="height: 500px;font-size: 18px;margin-bottom: 22px;">#if(null!=experiment)#(experiment.hfcontent)#end</div>
+                            		</div>                           		                           		
+                            		<div class="row row1">
+                            			<div class="form-group col-sm-12 sol-md-12">
+			                                <label class="control-label inplabel">源文件:</label>
+			                                <input value="#if(null!=experiment)#(experiment.sfname)#end" type="text" id="title" name="title" readonly="readonly" class="form-control input"> 
+			                            </div>
+                            		</div>              
+                            		<div class="row row2"></div>
+                            		<div class="row rowarea">
+                            			<div name="sfcontent" id="seditor" style="height: 500px;font-size: 18px;margin-bottom: 22px;">#if(null!=experiment)#(experiment.sfcontent)#end</div>
+                            		</div>
+                            		<div class="row row-btn pull-right">
+                            			<button onclick="window.history.back()" type="button" class="btn btn-lg btn-default">返回</button>
+                            		</div>
+                            	</form>
+                            </div>
+                        </div>
+                        <!-- End Example Events -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Panel Other -->
+    </div>
+
+    <!-- 全局js -->
+    <script src="../../../static/modules/plugin/jquery/jquery.min.js?v=2.1.4"></script>
+    <script src="../../../static/modules/plugin/bootstrap/bootstrap.min.js?v=3.3.6"></script>
+    <!-- 自定义js -->
+    <script src="../../../static/system/admin/js/content.js?v=1.0.0"></script>
+	<!-- ace -->
+	<script src="../../../static/modules/plugin/ace/ace.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		var editor = ace.edit("heditor");//获取ace对象
+		editor.setTheme("ace/theme/monokai");//设置ace主题
+		editor.getSession().setMode("ace/mode/c_cpp");//获取对应API
+		
+		var editor = ace.edit("seditor");//获取ace对象
+		editor.setTheme("ace/theme/monokai");//设置ace主题
+		editor.getSession().setMode("ace/mode/c_cpp");//获取对应API
+	</script>
+</body>
+</html>

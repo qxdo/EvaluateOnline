@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线测评系统 | 教师</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../../static/modules/plugin/bootstrap/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../../static/modules/plugin/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="../../../static/modules/plugin/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="../../../static/modules/plugin/animate/animate.css" rel="stylesheet">
+    <link href="../../../static/system/admin/css/style.css?v=4.1.0" rel="stylesheet">
+	<style>
+		.select {
+			width: 150px;
+			height: 30px;
+		}
+		.selelebel {
+			width:50px;
+			display: inline-block;
+		}
+	</style>
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="ibox float-e-margins"> 
+        <!-- Panel Other -->
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>#if(type == "class")班级#elseif(type == "course")课程#end信息列表</h5>
+            </div>
+            <div class="ibox-content">
+                <div class="row row-lg">
+                    <div class="col-sm-12">
+                        <!-- Example Events -->
+                        <div class="example-wrap">
+                            <div class="example">
+                                #if(type == "class")
+                                <div class="form-group col-md-6 col-sm-6" style="display: inline-block;position:relative;top:10px;">
+                                    <label class="control-label inplabel selelabel">班级:</label>
+                                    <div class="" style="width:150px;display: inline-block;">
+                                        <select class="form-control select" name="clazz" id="clazz" >
+                                            #if(null != clazzs)
+                                                #for(clazz : clazzs)
+                                                <option value="#(clazz.id)">#(clazz.name)</option>
+                                                #end
+                                            #end
+                                        </select>
+                                    </div>
+                                    &nbsp;&nbsp;
+                                    <label class="control-label inplabel selelabel"> 课程:</label>
+                                    <div class="" style="width:150px;display: inline-block;">
+                                    	<select class="form-control select" name="course" id="course">
+                                            #if(null != courses)
+                                                #for(course : courses)
+                                                <option value="#(course.id)">#(course.name)</option>
+                                                #end
+                                            #end
+                                        </select>
+                                    </div>
+                                </div>
+                                #end
+                                <table id="listTableEvents" data-mobile-responsive="true"  data-pagination="true">
+                                    <thead>
+                                        <tr>
+                                            <th data-field="listnum">序号</th>
+                                            #if(type == "course")
+                                            <th data-field="id">ID</th>
+                                            <th data-field="courseid">ID</th>
+                                            <th data-field="coursenumber">课程编号</th>
+                                            <th data-field="coursename">课程名称</th>
+                                            <th data-field="classid">班级ID</th>
+                                            <th data-field="classname">授课班级</th>
+                                            <th data-field="modifyby">修改人</th>
+                                            <th data-field="modifytime">修改时间</th>
+                                            <th data-field="Courseoperation" 
+                                            data-formatter="actionCourseFormatter"
+                                            data-events="actionCourseEvents">操作</th>
+                                            #elseif(type == "class")
+                                            <th data-field="id">ID</th>
+                                            <th data-field="number">学生学号</th>
+                                            <th data-field="name">学生名字</th>
+                                            <th data-field="Classoperation" 
+                                            data-formatter="actionClassFormatter"
+                                            data-events="actionClassEvents">操作</th>
+                                            #end
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- End Example Events -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Panel Other -->
+    </div>
+
+    <!-- 全局js -->
+    <script src="../../../static/modules/plugin/jquery/jquery.min.js?v=2.1.4"></script>
+    <script src="../../../static/modules/plugin/bootstrap/bootstrap.min.js?v=3.3.6"></script>
+    <script src="../../../static/modules/plugin/bootstrap-table/bootstrap-table.min.js?v=3.3.6"></script>
+    <script src="../../../static/modules/plugin/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
+    <!-- 自定义js -->
+    <script src="../../../static/system/admin/js/content.js?v=1.0.0"></script>
+
+	<script>
+		
+		var url = '/teacher/#(type)/list';
+		(function() {
+			var course = $("#course").val();
+			var clazzid = $("#clazz").val();
+			
+			var type = '#(type)';
+			if(type == "class"){
+				url = "/teacher/class/list?clazzid="+clazzid;
+			}else if(type == "course"){
+				url = "/teacher/course/list";
+			}
+			//班级下拉框改变事件
+			$("#clazz").change(function(){ 
+				clazzid = $("#clazz").val();
+				url = "/teacher/class/list?clazzid="+clazzid;
+				$("#listTableEvents").bootstrapTable('refresh', url);  
+			}); 
+		
+			$('#listTableEvents').bootstrapTable({
+				/*url: "../admin/bootstrap_table_test.json",*/
+				url: url,
+				search: true,
+				pagination: true,
+				showRefresh: true,
+				showToggle: true,
+				showColumns: true,
+				iconSize: 'outline',
+				toolbar: '#listToolbar',
+				icons: {
+					refresh: 'glyphicon-repeat',
+					toggle: 'glyphicon-list-alt',
+					columns: 'glyphicon-list'
+				},
+				columns: [{
+					field: 'listnum', //可不加  
+					title: '序号', //标题  可不加  
+					formatter: function(value, row, index) {
+						return index + 1;
+					}
+				}, {
+					checkbox: false
+				}]
+			});
+			$('#listTableEvents').bootstrapTable('hideColumn', 'courseid');
+			$('#listTableEvents').bootstrapTable('hideColumn', 'classid');
+			$('#listTableEvents').bootstrapTable('hideColumn', 'id')
+		})();
+		/*表格行增加删除函数*/
+		function actionCourseFormatter(value, row, index) {
+			return '<a class="mod">详情</a> ';
+		}
+		function actionClassFormatter(value, row, index) {
+			return '<a class="mod">详情</a> ';
+		}
+		window.actionCourseEvents = {
+			'click .mod': function(e, value, row, index) { //点击课程操作
+				var courseid = row.courseid;
+                var id = row.id;               
+				document.location.href = "/teacher/#(type)/info?id="+id+"&courseid=" + courseid;
+			}
+		}
+		//表格  - 操作 - 事件
+		window.actionClassEvents = {
+			'click .mod': function(e, value, row, index) { //点击班级操作   
+				//修改操作
+				/*alert("工号：" + row.column1);
+				location.href="yw_update.html"*/
+				var courseid = $("#course").val();
+				var studentid = row.id;
+				document.location.href = "/teacher/#(type)/info?studentid="+studentid+"&courseid=" + courseid;
+			}
+		}
+	</script>
+</body>
+</html>

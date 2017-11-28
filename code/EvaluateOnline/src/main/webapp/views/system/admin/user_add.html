@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线测评系统 | 管理员</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../../static/modules/plugin/bootstrap/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../../static/modules/plugin/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="../../../static/modules/plugin/iCheck/custom.css" rel="stylesheet">
+    <link href="../../../static/modules/plugin/animate/animate.css" rel="stylesheet">
+    <link href="../../../static/system/admin/css/style.css?v=4.1.0" rel="stylesheet">
+</head>
+<body class="gray-bg">
+	<div class="alert alert-success alert-dismissable" id="success" style="display: none;">
+        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+        操作成功 
+    </div>
+	<div class="alert alert-danger alert-dismissable" id="fail"  style="display: none;">
+        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+        操作失败！ 
+    </div>
+    <div class="alert alert-danger alert-dismissable" id="wrong" style="display: none;">
+    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+        输入信息格式错误 
+    </div>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        #if(usertype == "student")
+                        <h5>添加学生信息</h5>
+                        #elseif(usertype == "teacher")
+                        <h5>添加教师信息</h5>
+                        #elseif(usertype == "ywadmin")
+                        <h5>添加课程负责人信息</h5>
+                        #end
+                    </div>
+                    <div class="ibox-content">
+                        <form id="addUserForm" method="post" action="/admin/#if(usertype == 'admin')save#else#(usertype)/save#end" class="form-horizontal">
+                            <div class="form-group" style="display: none;">
+                                <label class="col-sm-4 col-md-4 control-label inplabel">ID:</label>
+                                <div class="col-sm-8 col-md-8">
+                                    <input name="id" placeholder="" id="userid" value="#if(null != user)#(user.id)#end" type="text" class="form-control input">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 col-md-4 control-label inplabel">#if(usertype == "student")学#else工#end号:</label>
+                                <div class="col-sm-8 col-md-8">
+                                    <input @keyup="changevalue" v-model="number" name="number" placeholder="请输入#if(usertype == "student")学#else工#end号" id="usernumber" type="text" class="form-control input">
+                                	<span style="display: none;" id="numError" class="error">用户已存在</span>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label inplabel">姓名:</label>
+                                <div class="col-sm-8">
+                                    <input @keyup="changevalue" v-model="name" name="name" id="username" placeholder="请输入姓名" type="text" class="form-control input">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label inplabel">性别:</label>
+                                <div class="col-sm-8">
+                                    <select @keyup="changevalue" v-model="sex" class="form-control input" name="sex" id="sex">
+                                        <option value="1">男</option>
+                                        <option value="0">女</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label inplabel">邮箱:</label>
+                                <div class="col-sm-8">
+                                    <input @keyup="changevalue" v-model="email" id="email" name="email" placeholder="请输入邮箱" type="text" class="form-control input" onchange="checkEmail(this.value)">
+                                	<span style="display: none;" id="emailError" class="error">邮箱格式错误</span>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label inplabel">电话:</label>
+                                <div class="col-sm-8">
+                                    <input @keyup="changevalue" v-model="phone" name="phone" id="phone" placeholder="请输入电话" type="text" class="form-control input" onchange="checkPhone(this.value)">
+                                	<span style="display: none;" id="phoneError" class="error">电话格式错误</span>
+                                </div>
+                            </div>
+                            #if(usertype == "student")
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label inplabel">班级:</label>
+                                <div class="col-sm-8">
+                                    <select @change="changevalue" v-model="clazznumber" class="form-control input" name="classid" id="clazz">
+                                        #for(clazz : clazzs)
+                                        <option value="#(clazz.id)">#(clazz.name)</option>
+                                        #end
+                                    </select>
+                                </div>
+                            </div>
+                            #end
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-md-4 col-sm-offset-4 col-md-offset-4 " style="text-align: center;">
+                                    <button v-bind:disabled="disabled" onclick="saveClass()" id="save_btn" class="btn btn-primary save_btn" type="button">#if(type == "update")修改#elseif(type == "add")添加#end</button>
+                                    <div style="display: inline-block;width: 50px;height: 37px;"></div>
+                                    <button onclick="window.history.back();" class="btn btn-white cancel_btn" type="button">取消</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	<!-- 全局js -->
+    <script src="../../../static/modules/plugin/jquery/jquery.min.js?v=2.1.4"></script>
+    <script src="../../../static/modules/plugin/bootstrap/bootstrap.min.js?v=3.3.6"></script>
+    <!-- 自定义js -->
+    <script src="../../../static/system/admin/js/content.js?v=1.0.0"></script>
+    <!-- iCheck -->
+    <script src="../../../static/modules/plugin/iCheck/icheck.min.js"></script>
+    <script type="text/javascript" src="../../../static/modules/plugin/vue/vue.js"></script>
+    <script>
+    	//验证邮箱
+    	function checkEmail(str){
+    		 var reg = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/;
+			  if(reg.test(str)){
+			  	$("#emailError").hide();
+		   		 return true;
+			  }else{
+			    $("#emailError").show();
+		   		return false;
+			  }
+    	}
+    	//验证手机号 1开头11位数字
+    	function checkPhone(str) {
+		  var reg = /^1\d{10}$/;
+		  if (reg.test(str)) {
+		  	$("#phoneError").hide();
+		    return true;
+		  } else {
+		  	$("#phoneError").show();
+		    return false;
+		  }
+		}
+        /*function checkEmail(){
+        	var email = $("#email").val();
+        	var regmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/; 
+			var result =  regemail.test(email); 
+			if(result == true){
+				$("#emailError").hide();
+				return true;
+			}else{
+				$("#emailError").show();
+				return false;
+			}
+        }*/
+        //验证手机号
+        /*function checkPhone(){
+        	var phone = $("#phone").val();
+        	var regphone = (/^1[3|4|5|8][0-9]\d{4,8}$/; 
+			var result =  regphone.test(phone); 
+			if(result == true){
+				$("#phoneError").hide();
+				return true;
+			}else{
+				$("#phoneError").show();
+				return false;
+			}
+        }*/
+        
+        var url = "/admin/#if(usertype == 'ywadmin')findByNumber#else#(usertype)/findByNumber#end";
+        var saveurl = "";
+        var newurl = "/admin/#if(usertype == 'admin')ywadmin#else#(usertype)#end";
+        var type = "#(type)";
+        var usertype = "#(usertype)";
+        if(type == "add"){
+            // 添加页面
+            saveurl = "/admin/#if(usertype == 'ywadmin')save#else#(usertype)/save#end";
+        }else if(type == "update"){
+            // 修改页面
+            saveurl = "/admin/#if(usertype == 'ywadmin')updatedeal#else#(usertype)/updatedeal#end";
+        }
+        // 
+        $(function(){
+            $("#usernumber").blur(function(){
+                // 获取学号/工号
+                var num = $("#usernumber").val();
+                if("" != num || num!=null ){
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: {number: num},
+                        dataType: "JSON",
+                        success: function (response) {
+                            if(response.code == 1){
+                            	//已存在
+                                $("#usernumber").val("");
+                                $("#numError").show();
+                                $("#save_btn").attr("disabled",true);
+                            }else{
+                            	//不存在 可用
+                                $("#numError").hide();
+                            }
+                        }
+                    });
+                }
+            })
+        })
+        
+    	
+		// 添加班级信息
+        function saveClass(){
+            // 获取工/学号 
+            var number = $("#usernumber").val();
+            // 获取名字
+            var name = $("#username").val();
+            //获取邮箱
+            var email = $("#email").val();
+            //获取手机号
+            var phone = $("#phone").val();
+            
+            var checkemail = checkEmail(email);
+            var checkphone = checkPhone(phone);
+            
+            if("" != name && "" != number && name!=null && number!=null && checkemail &&checkphone){
+                // 信息不能为空
+                $.ajax({
+                    type: "POST",
+                    url: saveurl,
+                    data: $("#addUserForm").serialize(),
+                    dataType: "JSON",
+                    success: function (response) {
+                        if(response.code == 1){
+                            // 保存信息成功
+                            $("#success").show();
+                            setTimeout(function(){
+                                $("#success").hide();
+                                document.location.href = newurl;
+                            },2000);
+                        }else{
+                            // 保存信息失败
+                            $("#fail").show();
+							setTimeout(function(){$("#fail").hide();},2000);
+                        }
+                    }
+                });
+            }else {
+            	//输出格式错误提示
+            	$("#wrong").show();
+				setTimeout(function(){$("#wrong").hide();},2000);
+            }
+        }
+
+
+        $(document).ready(function () {
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+        });
+
+        // 使用Vue
+		new Vue({
+			el: '#addUserForm',
+			data: {
+                number: "#if(null == user)#else#(user.number)#end",
+                name: "#if(null == user)#else#(user.name)#end",
+                sex: '#if(null == user)1#else#(user.sex)#end',
+				email: "#if(null == user)#else#(user.email)#end",
+				phone: "#if(null == user)#else#(user.phone)#end",
+                clazznumber: "",
+                disabled: "disabled"
+			},
+			methods: {
+				changevalue:function(){
+                    var type = '#(usertype)';
+                    if(type == "student"){
+                        if(this.number == "" || this.name == "" || "" == this.clazznumber){
+                            this.disabled = "disabled";
+                        }else{
+                            this.disabled = false;
+                        }
+                    }else{
+                        this.number = this.number.replace(/[^\w\.\/]/ig,'');
+                        if(this.number == "" || this.name == ""){
+                            this.disabled = "disabled";
+                        }else{
+                            this.disabled = false;
+                        }
+                    }
+				},
+				enterpass: function(){
+					$("#password").focus();
+				},
+				entercaptcha: function(){
+					$("#tify").focus();
+				},
+				enterlogin: function(){
+					$("#log_btn").focus();
+				},
+				login: function(){
+					logindeal();
+				}
+			}
+		})
+    </script>
+</body>
+
+</html>

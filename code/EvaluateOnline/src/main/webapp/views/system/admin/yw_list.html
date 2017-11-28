@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>课程负责人信息表</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../../static/modules/plugin/bootstrap/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../../static/modules/plugin/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="../../../static/modules/plugin/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="../../../static/modules/plugin/animate/animate.css" rel="stylesheet">
+    <link href="../../../static/system/admin/css/style.css?v=4.1.0" rel="stylesheet">
+	<style>
+		.modal {
+			z-index: 9999 !important;
+		}
+		.download-btn,.update-btn {
+			display: block;
+			height: 50px;
+			line-height: 50px;
+			vertical-align: middle;
+			margin: 0;
+			padding: 0;
+		}
+		
+		.download-btn {
+			margin-bottom: 28px;
+		}
+		.modal-body {
+			height: 200px;
+		}
+	</style>
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated">
+        <div class="ibox float-e-margins">
+         
+        <!-- Panel Other -->
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>课程负责人信息表</h5>
+            </div>
+            <div class="ibox-content">
+            	<!-- START提示信息 -->
+            	<div style="display: none;" class="alert alert-success alert-dismissable" id="success">
+			        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+			        删除成功 
+			    </div>
+		    	<div style="display: none;" class="alert alert-danger alert-dismissable" id="fail">
+			        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+			        删除失败！ 
+			    </div>
+			    <div style="display: none;" class="alert alert-success alert-dismissable" id="resetsuccess">
+			        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+			        重置成功 
+			    </div>
+			    <div style="display: none;" class="alert alert-danger alert-dismissable" id="resetfail">
+			        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+			        重置失败！ 
+			    </div>
+			    <!-- END提示信息 -->
+                <div class="row row-lg">
+                
+                    <div class="col-sm-12">
+                        <!-- Example Events -->
+                        <div class="example-wrap">
+                            <div class="example">
+                                <div class="hidden-xs" id="ywToolbar" role="group" style="height:54px;line-height:54px;vertical-align: middle;">
+                                    <a  href="/admin/add" type="button"  class="btn btn-outline btn-default">
+                                        添加负责人
+									</a>
+                                    &nbsp;&nbsp;
+                                    <button type="button"  data-toggle="modal" data-target="#myModal" class="btn btn-outline btn-default">
+                                        <a>批量添加</a>
+                                    </button>
+                                </div>
+                                <table id="ywList" data-mobile-responsive="true"  data-pagination="true">
+                                    <thead>
+                                        <tr>
+                                        	<th data-field="listnum">序号</th>
+                                            <th data-field="id">ID</th>
+                                            <th data-field="number">工号</th>
+                                            <th data-field="name">姓名</th>
+                                            <th data-field="sex">性别</th>
+                                            <th data-field="rsex" 
+									        data-formatter="actionrsexFormatter"
+									        data-events="actionrsexEvents">性别</th>
+                                            <th data-field="email">邮箱</th>
+                                            <th data-field="phone">电话</th>
+                                            <th data-field="operation" 
+									        data-formatter="actionFormatter"
+									        data-events="actionEvents">操作</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- End Example Events -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Panel Other -->
+    </div>
+	<!-- 模态框（Modal） -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	   <div class="modal-dialog">
+	       <div class="modal-content">
+	           <div class="modal-header">
+	               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	               <h3 class="modal-title" id="myModalLabel">批量导入负责人</h3>
+	           </div>
+	           <div class="modal-body">
+	           		<a href="/admin/download?type=courseadmin" type="button" class="col-sm-12 btn btn-info download-btn">下载模板</a>
+	           		<form id="uploadform" action="/admin/batchAdd" method="post" enctype="multipart/form-data">
+	           			<input type="hidden" name="type" value="courseadmin">
+	           			<label id="realBtn" class="col-sm-8  btn btn-default update-btn" style="width: 390px;margin-right: 13px;">
+						     <input type="file" id="fileinput" name="file" class="mFileInput" style="left:-9999px;position:absolute;">
+						     <span id="updatetext">点击选择上传文件</span>
+						</label>
+						<span class="col-sm-1"></span>
+						<button type="button" class="col-sm-3 btn btn-info download-btn" onclick="uploadFile()">批量导入</button>
+	           		</form>
+	           </div>
+	          
+	       </div><!-- /.modal-content -->
+	   </div><!-- /.modal -->
+	</div>
+	<!--END 模态框-->
+
+
+	<!-- 全局js -->
+    <script src="../../../static/modules/plugin/jquery/jquery.min.js?v=2.1.4"></script>
+    <script src="../../../static/modules/plugin/bootstrap/bootstrap.min.js?v=3.3.6"></script>
+    <!-- 自定义js -->
+    <script src="../../../static/system/admin/js/content.js?v=1.0.0"></script>
+    <!-- Bootstrap table -->
+    <script src="../../../static/modules/plugin/bootstrap-table/bootstrap-table.min.js"></script>
+	<script src="../../../static/modules/plugin/bootstrap-table-js/bootstrap-table.js"></script>
+	<script src="../../../static/modules/plugin/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
+    <!-- Peity -->
+    <script src="../../../static/system/admin/js/yw-list-demo.js"></script>
+    <script type="text/javascript">
+    $(function () {
+    	 $("#fileinput").change(function(){
+				var fileinput = $("#fileinput").val();
+				$("#updatetext").text(fileinput);
+			})
+	})
+ 	 //提交上传文件
+	function uploadFile() {
+		var file = $("#fileinput").val();
+		if(null != file){
+			$("#uploadform").submit();
+		}else{
+			
+		}
+	}
+    </script>
+    
+</body>
+
+</html>

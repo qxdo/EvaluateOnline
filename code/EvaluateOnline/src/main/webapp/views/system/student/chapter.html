@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线测评系统 | 教师</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link href="../../../static/modules/plugin/bootstrap/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../../static/modules/plugin/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="../../../static/modules/plugin/jsTree/style.min.css" rel="stylesheet">
+    <link href="../../../static/modules/plugin/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="../../../static/modules/plugin/animate/animate.css" rel="stylesheet">
+    <link href="../../../static/system/admin/css/style.css?v=4.1.0" rel="stylesheet">
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content  animated fadeInRight">
+
+        <div class="row">
+            <div class="col-sm-5 col-md-5">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>课程目录 </h5>
+                    </div>
+                    <div class="ibox-content">
+
+                         <div id="using_json">
+                         
+                         </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-7 col-md-7">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>实验列表</h5>
+                    </div>
+                    <div class="ibox-content">
+						
+                        <table id="experimentList" data-mobile-responsive="true"  data-pagination="true">
+                            <thead>
+                                <tr>
+                                    <th data-field="id">ID</th>
+                                    <th data-field="title">标题</th>
+                                    <th data-field="content">内容</th>
+                                    <th data-field="template">模板</th>
+                                    <th data-field="keyword">关键字</th>
+                                    <th data-field="input">输入</th>
+                                    <th data-field="output">输出</th>
+                                   <th data-field="operation" data-formatter="actionFormatter" data-events="actionEvents">开始实验</th>
+                                </tr>
+                            </thead>
+                        </table>
+
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+
+    </div>
+	 <!-- 全局js -->
+	<script src="../../../static/modules/plugin/jquery/jquery.min.js?v=2.1.4"></script>
+	<script src="../../../static/modules/plugin/bootstrap/bootstrap.min.js?v=3.3.6"></script>
+	<!-- 自定义js -->
+	<script src="../../../static/system/admin/js/content.js?v=1.0.0"></script>
+    <!-- jsTree plugin javascript -->
+    <script src="../../../static/modules/plugin/jsTree/jstree.min.js"></script>
+    <!-- bootstrap table  -->
+    <!-- Bootstrap table -->
+    <script src="../../../static/modules/plugin/bootstrap-table/bootstrap-table.min.js"></script>
+	<script src="../../../static/modules/plugin/bootstrap-table-js/bootstrap-table.js"></script>
+	<script src="../../../static/modules/plugin/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
+	<script type="text/javascript" src="../../../static/modules/plugin/vue/vue.js"></script>
+
+    <style>
+        .jstree-open > .jstree-anchor > .fa-folder:before {
+            content: "\f07c";
+        }
+
+        .jstree-default .jstree-icon.none {
+            width: 0;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+		//jstree
+            $('#using_json').jstree({
+                'core' : {
+			      'data' : {
+			      
+			        "url" : "/student/course/#",
+			        "dataType" : "json", 
+			     	 "data" : function (node) {
+				          	return { "id" :1,
+				      		};
+				        }
+			      }
+			    },
+			    "plugins" : [ "massload", "dnd","contextmenu" ]
+            });
+        });
+        
+        (function() {
+    		$('#experimentList').bootstrapTable({
+    			url: "/student/course/getQuestionsByCourseId",
+    			
+    			//iconSize: 'outline',
+    			icons: {
+    				refresh: 'glyphicon-repeat',
+    				toggle: 'glyphicon-list-alt',
+    				columns: 'glyphicon-list'
+    			},
+    			columns: [{
+    				field: 'listnumber', //可不加  
+    				//title: '序号', //标题  可不加  
+    				formatter: function(value, row, index) {
+    					return index + 1;
+    				}
+    			}, {
+    				checkbox: false
+    			}]
+    		});
+    		
+    	})();
+        function actionFormatter(value, row, index) {
+			return '<a class="in" >进入</a> ' ;
+		}
+        window.actionEvents = {
+			'click .in': function(e, value, row, index) { //修改   
+				//修改操作
+				var id = row.id;
+				document.location.href = "/docker?id=" + id;
+			}
+        }
+       
+    </script>
+</body>
+</html>

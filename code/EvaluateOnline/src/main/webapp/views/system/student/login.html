@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+
+    <title>在线测评系统 | 学生</title>
+
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+
+    <link rel="shortcut icon" href="favicon.ico"> 
+    <!-- <link href="/static/modules/plugin/bootstrap/bootstrap.min.css?v=3.3.6" rel="stylesheet"> -->
+    <link href="../../../static/modules/plugin/bootstrap/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../../static/modules/plugin/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    
+	<style>
+		body {
+			background-color: rgb(58, 197, 249);
+		}
+		.content {
+			margin-top: 9%;
+		}
+		.left_box {
+			padding: 0;
+			position:fixed;
+			bottom:0;
+		}
+		.right_box {
+			height: 388px;
+			position: absolute;
+		    left: 50%;
+		    padding-left: 100px;
+		}
+		.stu_img {
+			/*width: 380px;*/
+			width: 55%;
+		}
+		.form_box {
+			width: 400px;
+			height: 400px;
+			background: #fff;
+			border-radius: 25px;
+			-webkit-border-radius: 25px;
+			-moz-border-radius: 25px;
+		}
+		.form_title,h3 {
+			font-size: 30px;
+			color: rgb(63, 197, 237);
+			letter-spacing: 5px;
+			font-weight: 700;
+			text-align: center;
+			height: 85px;
+			line-height: 85px;
+			vertical-align: bottom;	
+		}
+		.form_title {
+			padding-top: 15px;
+		}
+		h3 {
+			margin: 0;
+		}
+		form {
+			
+		}
+		.input-group {
+			width: 307px;
+			height: 47px;
+			margin: 20px auto;
+		}
+		.input-group-addon {
+			height: 47.33px !important;
+		}
+		.input-group-addon,.form-control {
+			height: 48px !important;
+			border: 2px solid rgb(229, 229, 229);
+			border-radius: 0px !important;
+			-webkit-border-radius: 0px !important;
+			-moz-border-radius: 0px !important;
+		}
+		.footer_btn {
+			width: 307px;
+			margin: 20px auto;
+		}
+		.btn-primary {
+			width: 142px;
+			height: 36px;
+			line-height: 36px;
+			padding: 0;
+		}
+		.btn {
+		     background: rgb(57, 197, 248) !important;
+		     border: rgb(57, 197, 248) !important;
+		}
+		.btn:focus,.btn:active,
+		.btn:active:focus,
+		.btn.active:focus,
+		.btn.focus,
+		.btn:active.focus,
+		.btn.active.focus {
+		    outline: none !important;   
+		    background: rgb(57, 197, 248) !important;
+		    border: rgb(57, 197, 248) !important;
+		    box-shadow: none;
+		    border: 0;
+		}
+		.btn:active
+		{
+			background: rgba(57, 197, 248,0.5) !important;
+			border: rgba(57, 197, 248,0.5) !important;
+		}
+		.fa-user,.fa-lock {
+			font-size: 20px;
+		}
+		input.form-control,input.form-control:focus,input.form-control:active {
+			outline: none !important;
+			box-shadow:none;
+			-webkit-appearance: none !important;
+			border-color: rgb(229, 229, 229);
+		}
+		input:-webkit-autofill,input:-webkit-autofill:focus {
+			box-shadow: 0 0 0px 1000px #fff inset;
+			-webkit-box-shadow: 0 0 0px 1000px #fff inset;
+			background: #fff;
+		}
+		
+	</style>
+</head>
+
+	<div class="content">
+		<div class="left_box col-md-6 col-sm-6">
+			<img src="../../../static/system/student/img/stu_img.png" class="stu_img"> 
+		</div>	
+		<div class="right_box col-md-6 col-sm-6">
+			<div class="form_box">
+				<div class="form_title">
+					<h3>程序在线测评系统</h3>
+				</div>
+				<form id="studentloginform">
+					<div class="input-group input-group-lg input_first">
+						<span class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></span>
+						<input placeholder="请输入学号" @keyup="changevalue" v-model="number" type="text" name="username" id="username" class="form-control" autocomplete="off" disableautocomplete>
+					</div>
+					<div class="input-group input-group-lg">
+						<span class="input-group-addon"><i class="fa fa-lock" aria-hidden="true"></i></span>
+						<input placeholder="请输入密码"  @keyup="changevalue" v-model="password" type="password" name="password" id="password" class="form-control" autocomplete="off" disableautocomplete>
+					</div>
+					<div class="input-group input-group-lg">
+						<input placeholder="请输入验证码" @keyup="changevalue" v-model="captcha" type="text" name="tify" id="tify" class="form-control" style="width: 60%;">
+						<!--<span class="input-group-addon tify_img" style="width: 20%;">验证码图片</span>-->
+						<img src="/captcha" id="tify_img" style="width: 120px;height: 48px;" onClick="this.src=this.src+'?'">
+					</div>	
+					<div class="footer_btn">
+						<input v-bind:disabled="disabled" type="button" id="log_btn" class="btn btn-primary btn-lg pull-left" value="登录">
+						<input type="reset" class="btn btn-primary btn-lg pull-right" value="重置">
+					</div>
+				</form>
+				
+			</div>
+		</div>
+	</div>
+
+    <!-- 全局js -->
+    <!-- /static/modules/plugin/jquery -->
+    <script src="../../../static/modules/plugin/jquery/jquery.min.js?v=2.1.4"></script>
+    <script src="../../../static/modules/plugin/bootstrap/bootstrap.min.js?v=3.3.6"></script>
+    <!-- <script src="../js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="../js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="../js/plugins/layer/layer.min.js"></script> -->
+
+    <!-- 自定义js -->
+    <!--<script src="../js/hAdmin.js?v=4.1.0"></script>
+    <script type="text/javascript" src="../js/index.js"></script>
+
+    <!-- 第三方插件 -->
+    <!--<script src="../js/plugins/pace/pace.min.js"></script>-->
+	<script type="text/javascript" src="../../../static/modules/plugin/shake/shake.js"></script>
+	
+	<script type="text/javascript" src="../../../static/modules/plugin/vue/vue.js"></script>
+
+	<!-- 自定义js -->
+	<script type="text/javascript">
+
+		if (window != top){
+			top.location.href = location.href;  
+		}
+
+		$(function () {
+			//去除空格
+			function trim(s) {
+		  		if(s == null){
+		  			return ;
+		  		}
+		  	    return s.replace(/(^\s*)|(\s*$)/g, "");
+		  	}
+			//用户名检验
+	        $('#username').blur(function () {
+	        	
+	        	var username = trim($('#username').val());
+	        	if(username == "" || username == null){
+	        		 $(this).shake(2, 10, 400);
+	        		 $(this).css({'border-color':'#FF6666'});
+	        	}else{
+	        		$(this).css({'border-color':'rgb(229, 229, 229)'});
+	        	}
+	           	
+	        });
+	        //密码检验
+	        $('#password').blur(function () {
+	        	var password = $('#password').val();
+	        	if(password == "" || password == null){
+	        		 $(this).shake(2, 10, 400);
+	        		 $(this).css({'border-color':'#FF6666'});
+	        	}else{
+	        		$(this).css({'border-color':'rgb(229, 229, 229)'});
+	        	}
+	           
+	        });
+	        //验证码检验
+	        $('#tify').blur(function () {
+	        	var tify= $('#tify').val();
+	        	if(tify == "" || tify == null){
+	        		 $(this).shake(2, 10, 400);
+	        		 $(this).css({'border-color':'#FF6666'});
+	        	}else{
+	        		$(this).css({'border-color':'rgb(229, 229, 229)'});
+	        	}
+	           
+	        });
+	        
+	        //登录主页
+	        $("#log_btn").click(function() {
+	        	$.ajax({
+					type: "POST",
+					url: "/student/logindeal",
+					data: $("#studentloginform").serialize(),
+					dataType: "JSON",
+					success: function (response) {
+						if(response.code == 1){
+							// 登录成功	
+							document.location.href = "/student/";
+						}else if(response.code == 2){
+							// 存在空值
+							$("#tify_img").click();
+						}else if(response.code == 3){
+							// 工号不存在
+							$("#tify_img").click();
+							$("#username").val("");
+							$("#username").shake(2, 10, 400);
+	        		 		$("#username").css({'border-color':'#FF6666'});
+						}else if(response.code == 4){
+							// 密码错误
+							$("#tify_img").click();
+							$("#password").val("");
+							$("#password").shake(2, 10, 400);
+	        		 		$("#password").css({'border-color':'#FF6666'});
+						}else{
+							// 验证码错误
+							$("#tify_img").click();
+							$("#tify").val("");
+							$("#tify").shake(2, 10, 400);
+	        		 		$("#tify").css({'border-color':'#FF6666'});
+						}
+					}
+				});
+	        })
+	    });
+
+		// 使用Vue
+		new Vue({
+			el: '#studentloginform',
+			data: {
+				number: "",
+				password: "",
+				captcha: "",
+				disabled: "disabled"
+			},
+			methods: {
+				changevalue:function(){
+					this.number = this.number.replace(/[^\w\.\/]/ig,'');
+					if(this.number == "" || this.password == "" || this.captcha == ""){
+						this.disabled = "disabled";
+					}else{
+						this.disabled = false;
+					}
+				}
+			}
+		})
+	    </script>
+</body>
+
+</html>

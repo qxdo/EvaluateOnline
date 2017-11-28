@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线测评系统 | 管理员</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../../static/modules/plugin/bootstrap/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../../static/modules/plugin/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="../../../static/modules/plugin/iCheck/custom.css" rel="stylesheet">
+    <link href="../../../static/modules/plugin/animate/animate.css" rel="stylesheet">
+    <link href="../../../static/system/admin/css/style.css?v=4.1.0" rel="stylesheet">
+	<style>
+		.radio {
+			display: inline-block;
+		}
+	</style>
+</head>
+<body class="gray-bg">
+	<div class="alert alert-success alert-dismissable" id="success" style="display: none;">
+        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+        分配成功 
+    </div>
+	<div class="alert alert-danger alert-dismissable" id="fail"  style="display: none;">
+        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+        分配失败！ 
+    </div>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>为#if(type == "teacher")教师分配课程与班级#elseif(type == "class")班级分配教师与课程#elseif(type == "course")课程分配教师与班级#end</h5>
+                    </div>
+                    <div class="ibox-content">
+
+                        <!-- 为教师分配课程与班级 -->
+                        #if(type == "teacher")
+                        <form id="setCourseClazzForTeacher" method="post" class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-4 col-md-4 control-label inplabel">教师:</label>
+                                <div class="col-sm-8 col-md-8">
+                                    <input value="#(distribute.number)" name="teachernumber" id="teacherText" type="text" class="form-control input" readonly>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label inplabel">课程:</label>
+                                <div class="col-sm-8">
+                                    <select @change="changevalue" v-model="courseid" class="form-control input" name="courseid" id="teacherSelect">
+                                        #for(course : courses)
+                                        <option value="#(course.id)">#(course.name)</option>
+                                        #end
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label inplabel">班级:</label>
+                                <div class="col-sm-8">
+                                    <select  @change="changevalue" v-model="clazznumber" class="form-control input" name="clazznumber" id="courseSelect">
+                                        #for(clazz: clazzs)
+                                        <option value="#(clazz.number)">#(clazz.name)</option>
+                                        #end
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div> 
+                            <!-- <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label inplabel">内联复选框:</label>
+                                <div class="col-sm-8" style="width: 40%;">
+                                	<label class="checkbox-inline i-checks"><input type="checkbox" value="option3">c</label>
+                                </div>
+                            </div> -->
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label inplabel">权限:</label>
+                                <div class="col-sm-8">
+                                    <div class="radio i-checks">
+                                        <label><input type="radio" checked value="0" name="status"> <i></i>禁止修改课程</label>
+                                    </div>
+                                    <div class="radio i-checks">
+                                        <label><input type="radio" value="1" name="status"> <i></i>允许修改课程</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- -->
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-md-4 col-sm-offset-4 col-md-offset-4 " style="text-align: center;">
+                                    <button v-bind:disabled="disabled" onclick="saveCourseClazzForTeacher()" id="save_btn" class="btn btn-primary save_btn" type="button">保存分配</button>
+                                    <div style="display: inline-block;width: 50px;height: 37px;"></div>
+                                    <button onclick="window.history.back();" class="btn btn-white cancel_btn" type="button">取消</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- 为班级分配课程与教师 -->
+                        #elseif(type == "class")
+                        <form id="setCourseTeacherForClazz" method="post" class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-4 col-md-4 control-label inplabel">班级:</label>
+                                <div class="col-sm-8 col-md-8">
+                                    <input value="#(distribute.number)" name="clazznumber" id="teacherText" type="text" class="form-control input" readonly>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label inplabel">课程:</label>
+                                <div class="col-sm-8">
+                                    <select  @change="changevalue" v-model="courseid" class="form-control input" name="courseid" id="teacherSelect">
+                                        #for(course : courses)
+                                        <option value="#(course.id)">#(course.name)</option>
+                                        #end
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label inplabel">教师:</label>
+                                <div class="col-sm-8">
+                                    <select @change="changevalue" v-model="teachernumber" class="form-control input" name="teachernumber" id="courseSelect">
+                                        #for(teacher : teachers)
+                                        <option value="#(teacher.number)">#(teacher.name)</option>                                        
+                                        #end
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label inplabel">权限:</label>
+                                <div class="col-sm-8">
+                                    <div class="radio i-checks">
+                                        <label><input type="radio" checked value="0" name="status"> <i></i>禁止修改课程</label>
+                                    </div>
+                                    <div class="radio i-checks">
+                                        <label><input type="radio" value="1" name="status"> <i></i>允许修改课程</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <!-- <div class="form-group">
+                                <label class="col-sm-4 control-label inplabel">内联复选框:</label>
+
+                                <div class="col-sm-8" style="width: 45%;">
+                                    <label class="checkbox-inline i-checks">
+                                        <input type="checkbox" value="option1">a</label>
+                                </div>
+                            </div> -->
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-md-4 col-sm-offset-4 col-md-offset-4 " style="text-align: center;">
+                                    <button v-bind:disabled="disabled" onclick="saveCourseTeacherForClazz()" id="save_btn" class="btn btn-primary save_btn" type="button">保存分配</button>
+                                    <div style="display: inline-block;width: 50px;height: 37px;"></div>
+                                    <button onclick="window.history.back();" class="btn btn-white cancel_btn" type="button">取消</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- 为课程分配教师与班级（删除） -->
+                        #elseif(type == "course")
+                        <form id="setTeacherClazzForCourse" method="post" class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-4 col-md-4 control-label inplabel">课程:</label>
+                                <div class="col-sm-8 col-md-8">
+                                    <input value="#(distribute.name)" name="teacher" id="teacherText" type="text" class="form-control input" disabled>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label inplabel">教师:</label>
+                                <div class="col-sm-8">
+                                    <select @change="changevalue" v-model="teachernumber" class="form-control input" name="teachernumber" id="teacherSelect">
+                                        #for(teacher : teachers)
+                                        <option value="#(teacher.number)">#(teacher.name)</option>                                        
+                                        #end
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label inplabel">班级:</label>
+                                <div class="col-sm-8">
+                                    <select @change="changevalue" v-model="clazznumber" class="form-control input" name="coursenumber" id="courseSelect">
+                                        #for(clazz : clazzs)
+                                        <option value="#(clazz.number)">#(clazz.name)</option>
+                                        #end
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                            	<label class="col-sm-4 control-label inplabel">修改权限:</label>
+                            	<div class="col-sm-8">
+	                            	<div class="radio i-checks">
+	                                    <label>
+	                                        <input type="radio" value="option1" name="a"> <i></i> 允许修改
+	                                    </label>
+	                                </div>
+	                                <div class="radio i-checks">
+	                                    <label>
+	                                        <input type="radio" checked="" value="option2" name="a"> <i></i> 禁止修改
+	                                 	</label>
+	                                </div>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-md-4 col-sm-offset-4 col-md-offset-4 " style="text-align: center;">
+                                    <button v-bind:disabled="disabled" onclick="saveCourseTeacherClass()" id="save_btn" class="btn btn-primary save_btn" type="button">保存分配</button>
+                                    <div style="display: inline-block;width: 50px;height: 37px;"></div>
+                                    <button onclick="window.history.back();" class="btn btn-white cancel_btn" type="button">取消</button>
+                                </div>
+                            </div>
+                        </form>
+                        #end
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	<!-- 全局js -->
+    <script src="../../../static/modules/plugin/jquery/jquery.min.js?v=2.1.4"></script>
+    <script src="../../../static/modules/plugin/bootstrap/bootstrap.min.js?v=3.3.6"></script>
+    <!-- 自定义js -->
+    <script src="../../../static/system/admin/js/content.js?v=1.0.0"></script>
+    <!-- iCheck -->
+    <script src="../../../static/modules/plugin/iCheck/icheck.min.js"></script>
+    <script type="text/javascript" src="../../../static/modules/plugin/vue/vue.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+        });
+    </script>
+    <script>
+
+        // 为班级分配课程与教师
+        // setCourseTeacherForClazz
+        new Vue({
+			el: '#setCourseTeacherForClazz',
+			data: {
+                courseid: "",
+                teachernumber: '',
+                disabled: "disabled"
+			},
+			methods: {
+				changevalue:function(){
+                    if(this.courseid == "" || this.teachernumber == ""){
+                        this.disabled = "disabled";
+                    }else{
+                        this.disabled = false;
+                    }
+				}
+			}
+		})
+
+        // 为班级保存课程教师关系
+        function saveCourseTeacherForClazz(){
+            $.ajax({
+                type: "POST",
+                url: "/admin/#(type)/distributesave",
+                data: $("#setCourseTeacherForClazz").serialize(),
+                dataType: "JSON",
+                success: function (response) {
+                    if(response.code == 1){
+                        // 保存关系成功
+                        $("#success").show();
+                        setTimeout(function(){
+                            $("#success").hide();
+                             document.location.href = "/admin/#(type)/yw"
+                        },1500);
+                       
+                    }else{
+                        //
+                        $("#fail").show();
+						setTimeout(function(){$("#fail").hide();},1500);
+                    }
+                }
+            });
+        }
+
+        // 为教师分配班级与课程
+        // setCourseClazzForTeacher
+        new Vue({
+			el: '#setCourseClazzForTeacher',
+			data: {
+                courseid: "",
+                clazznumber: "",
+                disabled: "disabled"
+			},
+			methods: {
+				changevalue:function(){
+                    if(this.courseid == "" || this.clazznumber == ""){
+                        this.disabled = "disabled";
+                    }else{
+                        this.disabled = false;
+                    }
+				}
+			}
+		})
+
+        // 为教师保存课程班级关系
+        function saveCourseClazzForTeacher(){
+            $.ajax({
+                type: "POST",
+                url: "/admin/#(type)/distributesave",
+                data: $("#setCourseClazzForTeacher").serialize(),
+                dataType: "JSON",
+                success: function (response) {
+                    if(response.code == 1){
+                        // 保存关系成功
+                        $("#success").show();
+                        setTimeout(function(){
+                            $("#success").hide();
+                             document.location.href = "/admin/#(type)/yw"
+                        },1500);
+                    }else{
+						 $("#fail").show();
+						setTimeout(function(){$("#fail").hide();},1500);
+                    }
+                }
+            });
+        }
+
+        // 为课程分配教师与班级
+        // setTeacherClazzForCourse
+        new Vue({
+			el: '#setTeacherClazzForCourse',
+			data: {
+                teachernumber: "",
+                clazznumber: "",
+                disabled: "disabled"
+			},
+			methods: {
+				changevalue:function(){
+                    if(this.teachernumber == "" || this.teachernumber == ""){
+                        this.disabled = "disabled";
+                    }else{
+                        this.disabled = false;
+                    }
+				}
+			}
+		})
+
+        // 为课程分配教师与班级
+        function saveTeacherClazzForCourser(){
+            
+        }
+    </script>
+
+</body>
+</html>

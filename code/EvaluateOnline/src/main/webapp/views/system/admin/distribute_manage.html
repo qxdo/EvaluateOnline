@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线测评系统 | 教师</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../../static/modules/plugin/bootstrap/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../../static/modules/plugin/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="../../../static/modules/plugin/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="../../../static/modules/plugin/animate/animate.css" rel="stylesheet">
+    <link href="../../../static/system/admin/css/style.css?v=4.1.0" rel="stylesheet">
+	<style>
+		.select {
+			width: 150px;
+			height: 30px;
+		}
+		.selelebel {
+			width:50px;
+			display: inline-block;
+		}
+	</style>
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+    	<div class="alert alert-success alert-dismissable" id="success" style="display: none;">
+	        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+	        删除成功 
+	    </div>
+		<div class="alert alert-danger alert-dismissable" id="fail"  style="display: none;">
+	        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+	        删除失败！ 
+	    </div>
+        <div class="ibox float-e-margins"> 
+        <!-- Panel Other -->
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>课程信息列表</h5>
+            </div>
+            <div class="ibox-content">
+                <div class="row row-lg">
+                    <div class="col-sm-12">
+                        <!-- Example Events -->
+                        <div class="example-wrap">
+                            <div class="example">
+                                <!--<div class="form-group col-md-6 col-sm-6" style="display: inline-block;position:relative;top:10px;">
+                                    <label class="control-label inplabel selelabel">教师:</label>
+                                    <div class="" style="width:150px;display: inline-block;">
+                                        <select class="form-control select" name="clazz" id="clazz" >
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                        </select>
+                                    </div>
+                                    &nbsp;&nbsp;
+                                    <label class="control-label inplabel selelabel">  班级:</label>
+                                    <div class="" style="width:150px;display: inline-block;">
+                                    	<select class="form-control select" name="course" id="course">
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                        </select>
+                                    </div>
+                                </div>-->
+                                <table id="listTableEvents" data-mobile-responsive="true"  data-pagination="true">
+                                    <thead>
+                                        <tr>
+                                            <th data-field="listnum">序号</th>
+                                            <th data-field="id">ID</th><!--隐藏-->
+                                            <th data-field="teachername">教师名称</th>
+                                            <th data-field="teachernumber">教师编号</th>
+                                            <th data-field="coursename">课程名称</th>
+                                            <th data-field="coursenumber">课程编号</th>
+                                            <th data-field="clazzname">班级名称</th>
+                                            <th data-field="clazznumber">班级编号</th>
+                                            <th data-field="status">状态</th>
+                                            <th data-field="testpower" 
+									        data-formatter="actionTestFormatter"
+									        data-events="actionTestEvents">实验修改</th>
+                                            <th data-field="operation" 
+                                            data-formatter="actionFormatter"
+                                            data-events="actionEvents">操作</th><!--删除-->
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- End Example Events -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Panel Other -->
+    </div>
+
+    <!-- 全局js -->
+    <script src="../../../static/modules/plugin/jquery/jquery.min.js?v=2.1.4"></script>
+    <script src="../../../static/modules/plugin/bootstrap/bootstrap.min.js?v=3.3.6"></script>
+    <!-- 自定义js -->
+    <script src="../../../static/system/admin/js/content.js?v=1.0.0"></script>
+    <!-- Bootstrap table -->
+    <script src="../../../static/modules/plugin/bootstrap-table/bootstrap-table.min.js"></script>
+	<script src="../../../static/modules/plugin/bootstrap-table-js/bootstrap-table.js"></script>
+	<script src="../../../static/modules/plugin/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
+	<script>
+		var url = '';//'/teacher/#(type)/list';
+		(function() {
+			
+			url = "/admin/#(type)/distributelist?number=#if(null != distribute)#(distribute.number)#end";
+			
+			$('#listTableEvents').bootstrapTable({
+				/*url: "../admin/bootstrap_table_test.json",*/
+				url: url,
+				search: true,
+				pagination: true,
+				showRefresh: true,
+				showToggle: true,
+				showColumns: true,
+				iconSize: 'outline',
+				toolbar: '#listToolbar',
+				icons: {
+					refresh: 'glyphicon-repeat',
+					toggle: 'glyphicon-list-alt',
+					columns: 'glyphicon-list'
+				},
+				columns: [{
+					field: 'listnum', //可不加  
+					title: '序号', //标题  可不加  
+					formatter: function(value, row, index) {
+						return index + 1;
+					}
+				}, {
+					checkbox: false
+				}]
+			});
+			$('#listTableEvents').bootstrapTable('hideColumn', 'id');//隐藏教师id
+			$('#listTableEvents').bootstrapTable('hideColumn', 'status');//隐藏状态
+		})();
+		/*表格行增加删除函数*/
+		function actionFormatter(value, row, index) {
+			return '<a class="del">删除</a> ';
+		}
+		//教师实验修改权限
+		function actionTestFormatter(value, row, index) {
+			if(row.status == 1) {
+				return '<a class="testpower">禁止</a> ';
+			} else {
+				return '<a class="testpower">开启</a> ';
+			}
+		}
+		window.actionEvents = {
+			'click .del': function(e, value, row, index) { //删除
+				//删除操作
+				var id = row.id;
+				if(!confirm("确认要删除吗？")) {
+					return;
+				}
+
+				$.ajax({
+					type: "POST",
+					url: "/admin/#(type)/distributedelete",
+					data: {
+						"id": id
+					},
+					dataType: "JSON",
+					success: function(data) {
+						if(data.code == 1) {
+							//删除成功
+							$("#success").show();
+							$("#listTableEvents").bootstrapTable('remove', {
+								field: 'id',
+								values: [parseInt(id)]
+							});
+							setTimeout(function() {
+								$("#success").hide();
+							}, 2000);
+						} else {
+							$("#fail").show();
+							setTimeout(function() {
+								$("#fail").hide();
+							}, 2000);
+						}
+					}
+				});
+			}
+		}
+		
+		window.actionTestEvents = {
+			'click .testpower': function(e, value, row, index) {
+				var id = row.id;
+				var tr = this.parentNode.parentNode;
+				var cells = tr.cells;
+				var teacherAuthText = cells[7].childNodes[0];
+				
+				$.ajax({
+					type: "POST",
+					url: "/admin/#(type)/courseauth",
+					data: {
+						"id": id
+					},
+					dataType: "JSON",
+					success: function(data) {
+						if(data.code==1){
+							if(teacherAuthText.innerHTML == "禁止") {
+								teacherAuthText.innerHTML = "开启";
+							} else {
+								teacherAuthText.innerHTML = "禁止";
+							}
+						}else{
+							alert("修改失败！");
+						}
+					}
+				});
+				
+	
+			}
+		}
+	</script>
+</body>
+</html>

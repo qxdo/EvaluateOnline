@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线测评系统 | 管理员</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../../static/modules/plugin/bootstrap/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../../static/modules/plugin/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="../../../static/modules/plugin/iCheck/custom.css" rel="stylesheet">
+    <link href="../../../static/modules/plugin/animate/animate.css" rel="stylesheet">
+    <link href="../../../static/system/admin/css/style.css?v=4.1.0" rel="stylesheet">
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+    	<div style="display: none;" class="alert alert-success alert-dismissable" id="success">
+	        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+	        添加成功 
+	    </div>
+    	<div style="display: none;" class="alert alert-danger alert-dismissable" id="fail">
+	        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+	        添加失败！ 
+	    </div>
+	    <div style="display: none;" class="alert alert-success alert-dismissable" id="updatesuccess">
+	        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+	        修改成功 
+	    </div>
+	    <div style="display: none;" class="alert alert-success alert-dismissable" id="updateexist">
+	        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+	        班级已存在
+	    </div>
+    	<div style="display: none;" class="alert alert-danger alert-dismissable" id="updatefail">
+	        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+	        修改失败！ 
+	    </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>添加班级信息</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <form  id="addClassForm" class="form-horizontal">
+                            #if(type == "update")
+                            <div class="form-group" style="display: none">
+                                <label class="col-sm-4 col-md-4 control-label inplabel">班级编号:</label>
+                                <div class="col-sm-8 col-md-8">
+                                    <input value="#if(clazz != null)#(clazz.id)#end" type="text" id="updatenumber" name="clazz.id" class="form-control input"> 
+                                </div>
+                            </div>
+                            #end
+                            <div class="form-group">
+                                <label class="col-sm-4 col-md-4 control-label inplabel">班级编号:</label>
+                                <div class="col-sm-8 col-md-8">
+                                    <input value="#if(clazz != null)#(clazz.number)#end" type="text" id="number" name="clazz.number" class="form-control input"> 
+                                	<span style="display: none;" id="error" class="error">班级已存在</span>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 col-md-4 control-label inplabel">班级名称:</label>
+                                <div class="col-sm-8 col-md-8">
+                                    <input value="#if(clazz != null)#(clazz.name)#end" type="text" id="name" name="clazz.name" class="form-control input">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                            	#if(type == "add")
+	                            <div class="col-sm-4 col-md-4 col-sm-offset-4 col-md-offset-4 " style="text-align: center;">
+	                                <input type="button" onclick="saveClass()" id="save_btn" class="btn btn-primary save_btn" value="保存添加">
+	                                <div style="display: inline-block;width: 50px;height: 37px;"></div>
+	                                <input type="button" onclick="window.history.back();" class="btn btn-white cancel_btn" value="取消">
+	                            </div>
+	                            #elseif(type == "update")
+	                            <div class="col-sm-4 col-md-4 col-sm-offset-4 col-md-offset-4 " style="text-align: center;">
+	                                <input type="button" onclick="updateClass()" id="save_btn" class="btn btn-primary save_btn" value="保存修改">
+	                                <div style="display: inline-block;width: 50px;height: 37px;"></div>
+	                                <input type="button" onclick="window.history.back();" class="btn btn-white cancel_btn" value="取消">
+	                            </div>
+	                            #end
+	                        </div>
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 全局js -->
+    <script src="../../../static/modules/plugin/jquery/jquery.min.js?v=2.1.4"></script>
+    <script src="../../../static/modules/plugin/bootstrap/bootstrap.min.js?v=3.3.6"></script>
+    <!-- 自定义js -->
+    <script src="../../../static/system/admin/js/content.js?v=1.0.0"></script>
+    <!-- iCheck -->
+    <script src="../../../static/modules/plugin/iCheck/icheck.min.js"></script> 	
+    <script>
+        $(document).ready(function () {
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+        });
+
+       //-------------------------
+       // 校验班级是否存在
+       $("#number").blur(function(){
+            var num = $("#number").val();
+            if("" != num || num != null){
+        		$.ajax({
+	        		type: "POST",
+					url: "/admin/class/findClassByNumber",
+					data: {number: num},
+					dataType: "JSON",
+					success:function(data){
+						if(data.code==1){
+                            //班级编号已存在
+                            $("#error").show();
+                            $("#number").val("");
+						}else{
+							$("#error").hide();
+						}
+					}
+	        	});
+        	}
+        })
+
+        $("#number").focus(function(){
+            $("#error").hide();
+        })
+
+        // 添加班级信息
+        function saveClass(){
+            // 获取班级编号 
+            var clazznumber = $("#number").val();
+            // 获取班级名称
+            var clazzname = $("#name").val();
+            if("" != clazzname && "" != clazznumber && clazzname!= null && clazznumber != null){
+                // 班级信息不能为空
+                $.ajax({
+                    type: "POST",
+                    url: "/admin/class/save",
+                    data: $("#addClassForm").serialize(),
+                    dataType: "JSON",
+                    success: function (response) {
+                        if(response.code == 1){
+                            // 保存班级信息成功
+                            $("#success").show();
+                            setTimeout(function(){
+                                $("#success").hide();
+                                document.location.href = "/admin/class"
+                            },1000);
+                        }else{
+                            // 保存班级信息失败
+                            $("#fail").show();
+							setTimeout(function(){$("#fail").hide();},1000);
+                        }
+                    }
+                });
+            }
+        }
+        function updateClass(){
+            // 获取班级编号 
+            var clazznumber = $("#updatenumber").val();
+            // 获取班级名称
+            var clazzname = $("#name").val();
+            if("" != clazzname && "" != clazznumber && clazzname!= null && clazznumber != null){
+                // 班级信息不能为空
+                $.ajax({
+                    type: "POST",
+                    url: "/admin/class/updatesave",
+                    data: $("#addClassForm").serialize(),
+                    dataType: "JSON",
+                    success: function (response) {
+                        if(response.code == 1){
+                            // 修改班级信息成功
+                            $("#updatesuccess").show();
+                            setTimeout(function(){
+                                $("#updatesuccess").hide();
+                                document.location.href = "/admin/class"
+                            },1000);
+                        }else if(response.code == 2){
+                        	$("#updateexist").show();
+                            setTimeout(function(){
+                                $("#updateexist").hide();
+                                document.location.href = "/admin/class"
+                            },1000);
+                        }
+                        else{
+                            // 修改班级信息失败
+                            $("#updatefail").show();
+							setTimeout(function(){$("#updatefail").hide();},1000);
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>
