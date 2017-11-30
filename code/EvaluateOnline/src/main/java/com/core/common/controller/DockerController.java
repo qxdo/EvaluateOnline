@@ -180,10 +180,9 @@ public class DockerController extends Controller{
 		
 		Question question = Question.dao.findById(Integer.parseInt(dir));
 		//System.out.println("======"+question.getInput()+question.getOutput());
-		question.setInput(null);
-		question.setOutput(null);
+		
 		String x = "judge" + delimiter +dir+ delimiter;
-		//question.setOutput(null);
+		
 		if( null !=question.getInput() && !question.getInput().trim().equals("")){
 			x+=question.getInput();
 		}else{
