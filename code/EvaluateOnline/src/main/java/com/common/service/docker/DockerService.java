@@ -211,11 +211,11 @@ public class DockerService {
 				}
 				docker.stop(studentId);
 				if (!connected) {
-					errors.append("Tester服务器 故障");
+					errors.append("请检测你的代码,确定输入输出参数个数正确.");
 				}
 			} else if (status == 304) {
 				docker.stop(studentId);
-				errors.append("关闭此对话框，再试一次.");
+				errors.append("请再次点击编译按钮");
 			} else {
 				errors.append("Docker容器 " + studentId + " 出现故障");
 			}
