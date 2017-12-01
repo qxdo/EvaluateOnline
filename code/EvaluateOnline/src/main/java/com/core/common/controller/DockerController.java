@@ -93,21 +93,7 @@ public class DockerController extends Controller{
 				System.out.println("status is 2 2");
 				inputDataTo.updateToStudentexpertiment2(port, Long.parseLong(sInputToDocker.getDir()), 2,sInputToDocker.getHeadername(),sInputToDocker.getHeader(),sInputToDocker.getSrcname(),sInputToDocker.getSrc());
 			}
-			String dir =  sInputToDocker.getDir();//题号
-			// sid; 学生的ID
-			Experiment experiment =  Experiment.dao.findById(Integer.parseInt(dir));
-			Integer score = experiment.getScore();
-			Double  tmpScore =  score.floatValue()* 0.3; //* 0.3;
-			
-			//String sql = "";
-			String sql = "select * from studentexpertiment where studentid = ? and experimentid = ?";
-			
-			List<Studentexpertiment> list =  Studentexpertiment.dao.find(sql,port,Integer.parseInt(dir));
-			if(list.size() == 1){
-				Long id =  list.get(0).getId();
-				Studentexpertiment.dao.findById(id).set("score", tmpScore.floatValue()).update();
-				
-			}
+			inputDataTo.updateToStudentexpertimentScore(port,Long.parseLong(sInputToDocker.getDir()),0.3);
 			setAttr("result", "编译成功");
 			renderJson();
 		}else{
@@ -150,7 +136,9 @@ public class DockerController extends Controller{
 		
 		if(error.startsWith("ok")){
 			setAttr("result", "success");
+			
 			inputDataTo.updateToStudentexpertiment(studentid, Long.parseLong(dir), 4);
+			
 			renderJson();
 		}else{
 			setAttr("result", error);
@@ -229,17 +217,7 @@ public class DockerController extends Controller{
 		if(error.startsWith("ok")){
 			setAttr("result", "评测成功");
 			inputDataTo.updateToStudentexpertiment(studentid, Long.parseLong(dir), 6);
-			
-			// sid; 学生的ID
-			Experiment experiment =  Experiment.dao.findById(Integer.parseInt(dir));
-			Float score = experiment.getScore().floatValue();
-			String sql = "select * from studentexpertiment where studentid = ? and experimentid = ?";
-			List<Studentexpertiment> list =  Studentexpertiment.dao.find(sql,port,Integer.parseInt(dir));
-			if(list.size() == 1){
-				Long id =  list.get(0).getId();
-				Studentexpertiment.dao.findById(id).set("score", score).update();
-				
-			}
+			inputDataTo.updateToStudentexpertimentScore(studentid, Long.parseLong(dir), 1.0);
 			service.stop(sid);
 			renderJson();
 		}else{

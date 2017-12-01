@@ -14,7 +14,19 @@ public class InputDataTo {
 		List<Experiment> experiments = Experiment.dao.find(sql,questionid);
 		Experiment experiment = experiments.get(0);
 		
-		Record record = new Record().set("studentid", studentid).set("courseid", experiment.getCourseid()).set("chapterid", experiment.getChapterid()).set("sectionid", experiment.getSectionid()).set("partid", experiment.getPartid()).set("experimentid", experiment.getId()).set("hfname", hfname).set("hfcontent", hfcontent).set("sfname", sfname).set("sfcontent", sfcontent).set("status", status).set("flag", 1);
+		Record record = new Record()
+				.set("studentid", studentid)
+				.set("courseid", experiment.getCourseid())
+				.set("chapterid", experiment.getChapterid())
+				.set("sectionid", experiment.getSectionid())
+				.set("partid", experiment.getPartid())
+				.set("experimentid", experiment.getId())
+				.set("hfname", hfname)
+				.set("hfcontent", hfcontent)
+				.set("sfname", sfname)
+				.set("sfcontent", sfcontent)
+				.set("status", status)
+				.set("flag", 1);
 		Db.save("studentexpertiment", record);
 		
 	}
@@ -34,7 +46,15 @@ public class InputDataTo {
 			return 2;
 		}
 	}
-	
+	public void updateToStudentexpertimentScore(long studentid,long qusetionid,Double percent){
+		String getexperiment = Db.getSql("student.getExperimentInfoByQuestionId");
+		Experiment experiment =(Experiment.dao.find(getexperiment,qusetionid)).get(0);
+		String sql = Db.getSql("student.updateStatusByQuestionidAndStudentId");
+		Double score =experiment.getScore().floatValue() * percent;
+		
+		Record studentexpertiment = Db.findFirst(sql,studentid,experiment.getId()).set("score", score.floatValue());
+		Db.update("studentexpertiment",studentexpertiment);
+	}
 	
 	public void updateToStudentexpertiment(long studentid,long qusetionid,int status){
 		String getexperiment = Db.getSql("student.getExperimentInfoByQuestionId");
