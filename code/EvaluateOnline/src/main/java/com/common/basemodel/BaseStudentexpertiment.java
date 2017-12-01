@@ -174,12 +174,12 @@ public abstract class BaseStudentexpertiment<M extends BaseStudentexpertiment<M>
 		return getInt("status");
 	}
 	
-	public void setScore(java.lang.Integer score) {
+	public void setScore(java.lang.Float score) {
 		set("score", score);
 	}
 
-	public java.lang.Integer getScore() {
-		return getInt("score");
+	public java.lang.Float getScore() {
+		return getFloat("score");
 	}
 
 	public void setFlag(java.lang.Integer flag) {

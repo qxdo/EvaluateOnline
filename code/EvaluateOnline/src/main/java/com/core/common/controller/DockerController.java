@@ -2,12 +2,18 @@ package com.core.common.controller;
 
 
 
+
+
+import java.util.List;
+
 import com.common.bean.StudentInputToDocker;
 import com.common.service.docker.DockerService;
 import com.common.service.docker.InputDataTo;
 import com.common.util.Docker;
+import com.core.common.model.Experiment;
 import com.core.common.model.Question;
 import com.core.common.model.Student;
+import com.core.common.model.Studentexpertiment;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.PropKit;
 
@@ -79,10 +85,26 @@ public class DockerController extends Controller{
 		
 		System.out.println("获取到日志信息："+ errors);
 		if(errors.startsWith("ok")){
+
 			if(inputDataTo.isHasStudentexpertiment(port, Long.parseLong(sInputToDocker.getDir()))==1){
 				inputDataTo.setDataToStudentexpertiment(port, Long.parseLong(sInputToDocker.getDir()) , sInputToDocker.getHeadername(), sInputToDocker.getHeader(), sInputToDocker.getSrcname(), sInputToDocker.getSrc(), 2);
 			}else{
 				inputDataTo.updateToStudentexpertiment(port, Long.parseLong(sInputToDocker.getDir()), 2);
+			}
+			String dir =  sInputToDocker.getDir();//题号
+			// sid; 学生的ID
+			Experiment experiment =  Experiment.dao.findById(Integer.parseInt(dir));
+			Integer score = experiment.getScore();
+			Double  tmpScore =  score.floatValue()* 0.3; //* 0.3;
+			
+			//String sql = "";
+			String sql = "select * from studentexpertiment where studentid = ? and experimentid = ?";
+			
+			List<Studentexpertiment> list =  Studentexpertiment.dao.find(sql,port,Integer.parseInt(dir));
+			if(list.size() == 1){
+				Long id =  list.get(0).getId();
+				Studentexpertiment.dao.findById(id).set("score", tmpScore.floatValue()).update();
+				
 			}
 			setAttr("result", "编译成功");
 			renderJson();
@@ -204,6 +226,16 @@ public class DockerController extends Controller{
 			setAttr("result", "评测成功");
 			inputDataTo.updateToStudentexpertiment(studentid, Long.parseLong(dir), 6);
 			
+			// sid; 学生的ID
+			Experiment experiment =  Experiment.dao.findById(Integer.parseInt(dir));
+			Float score = experiment.getScore().floatValue();
+			String sql = "select * from studentexpertiment where studentid = ? and experimentid = ?";
+			List<Studentexpertiment> list =  Studentexpertiment.dao.find(sql,port,Integer.parseInt(dir));
+			if(list.size() == 1){
+				Long id =  list.get(0).getId();
+				Studentexpertiment.dao.findById(id).set("score", score).update();
+				
+			}
 			service.stop(sid);
 			renderJson();
 		}else{
