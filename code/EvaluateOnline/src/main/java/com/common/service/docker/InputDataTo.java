@@ -44,4 +44,19 @@ public class InputDataTo {
 		Db.update("studentexpertiment",studentexpertiment);
 	}
 	
+	public void updateToStudentexpertiment2(long studentid,long qusetionid,int status,String hfname,String hfcontent,String sfname,String sfcontent){
+		System.out.println("update2:"+hfname+":"+hfcontent+":"+sfname+":"+sfcontent);
+		
+		String getexperiment = Db.getSql("student.getExperimentInfoByQuestionId");
+		Experiment experiment =(Experiment.dao.find(getexperiment,qusetionid)).get(0);
+		String sql = Db.getSql("student.updateStatusByQuestionidAndStudentId");
+		Record studentexpertiment = Db.findFirst(sql,studentid,experiment.getId())
+				.set("status", status)
+				.set("hfname", hfname)
+				.set("hfcontent", hfcontent)
+				.set("sfname", sfname)
+				.set("sfcontent", sfcontent);
+		Db.update("studentexpertiment",studentexpertiment);
+	}
+	
 }

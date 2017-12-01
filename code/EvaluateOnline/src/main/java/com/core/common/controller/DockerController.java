@@ -87,9 +87,11 @@ public class DockerController extends Controller{
 		if(errors.startsWith("ok")){
 
 			if(inputDataTo.isHasStudentexpertiment(port, Long.parseLong(sInputToDocker.getDir()))==1){
+				System.out.println("status is 2 1");
 				inputDataTo.setDataToStudentexpertiment(port, Long.parseLong(sInputToDocker.getDir()) , sInputToDocker.getHeadername(), sInputToDocker.getHeader(), sInputToDocker.getSrcname(), sInputToDocker.getSrc(), 2);
 			}else{
-				inputDataTo.updateToStudentexpertiment(port, Long.parseLong(sInputToDocker.getDir()), 2);
+				System.out.println("status is 2 2");
+				inputDataTo.updateToStudentexpertiment2(port, Long.parseLong(sInputToDocker.getDir()), 2,sInputToDocker.getHeadername(),sInputToDocker.getHeader(),sInputToDocker.getSrcname(),sInputToDocker.getSrc());
 			}
 			String dir =  sInputToDocker.getDir();//题号
 			// sid; 学生的ID
@@ -117,9 +119,11 @@ public class DockerController extends Controller{
 			System.out.println(sInputToDocker.getSrc());
 			*/
 			if(inputDataTo.isHasStudentexpertiment(port, Long.parseLong(sInputToDocker.getDir()))==1){
+				System.out.println("status is 1 1");
 				inputDataTo.setDataToStudentexpertiment(port, Long.parseLong(sInputToDocker.getDir()) , sInputToDocker.getHeadername(), sInputToDocker.getHeader(), sInputToDocker.getSrcname(), sInputToDocker.getSrc(), 1);
 			}else{
-				inputDataTo.updateToStudentexpertiment(port, Long.parseLong(sInputToDocker.getDir()), 1);
+				System.out.println("status is 1 2");
+				inputDataTo.updateToStudentexpertiment2(port, Long.parseLong(sInputToDocker.getDir()), 1,sInputToDocker.getHeadername(),sInputToDocker.getHeader(),sInputToDocker.getSrcname(),sInputToDocker.getSrc());
 			}
 			setAttr("result", errors);
 			renderJson();
